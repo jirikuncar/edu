@@ -1,0 +1,354 @@
+/* Atlas Drill on the shared Amber Sea palette: the chart is a night-sea
+   chart, the target country is picked out in gold. */
+
+.tabs {
+  display: flex;
+  gap: var(--s1);
+  margin-bottom: var(--s1);
+}
+
+.tabs button {
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  color: var(--paper-dim);
+  font-family: var(--util);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  padding: 9px 13px;
+  min-height: 40px;
+}
+
+.tabs button.on {
+  color: var(--gold);
+  border-color: var(--gold-soft);
+  background: var(--gold-faint);
+}
+
+.atlas-title {
+  font-size: clamp(26px, 6.5vw, 40px);
+  color: var(--gold);
+  line-height: 1.04;
+  margin: 4px 0 0;
+}
+
+.hint {
+  color: var(--foam);
+}
+
+.meta {
+  display: flex;
+  gap: var(--s3);
+  flex-wrap: wrap;
+  color: var(--paper-dim);
+  border-top: 1px solid var(--gold-soft);
+  padding-top: 12px;
+  margin: 0;
+}
+
+/* The header track is progress; this is time. Different colour, thinner,
+   and it turns coral when the sand is nearly out. */
+.timer i {
+  background: var(--foam);
+  transition: width 0.1s linear;
+}
+
+.timer.low i {
+  background: var(--coral-line);
+}
+
+/* ---------- chart ---------- */
+
+.chart-card {
+  border: 1px solid var(--gold-soft);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--abyss);
+}
+
+.chart-card svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.ocean {
+  fill: #08203a;
+}
+
+.graticule {
+  fill: none;
+  stroke: rgba(242, 180, 65, 0.16);
+  stroke-width: 0.5;
+}
+
+.sphere {
+  stroke: rgba(242, 180, 65, 0.35);
+  stroke-width: 1;
+}
+
+.land {
+  fill: #17364e;
+  stroke: #08203a;
+  stroke-width: 0.6;
+}
+
+.target {
+  fill: var(--gold);
+  stroke: var(--paper);
+  stroke-width: 0.7;
+}
+
+.locator {
+  fill: none;
+  stroke: var(--foam);
+  stroke-width: 2;
+}
+
+.veil {
+  fill: #08203a;
+  opacity: 0.95;
+}
+
+.veil-label {
+  fill: var(--paper-dim);
+  font-family: var(--util);
+  font-size: 13px;
+  text-anchor: middle;
+}
+
+.readout {
+  display: flex;
+  justify-content: space-between;
+  padding: 7px 11px;
+  margin: 0;
+  border-top: 1px solid var(--gold-soft);
+  background: rgba(6, 22, 38, 0.75);
+  font-family: var(--util);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--gold);
+}
+
+/* ---------- question ---------- */
+
+.ask {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s1);
+  text-align: center;
+}
+
+.ask strong {
+  font-family: var(--display);
+  font-variation-settings: "opsz" 90;
+  font-weight: 900;
+  font-size: clamp(24px, 6vw, 34px);
+  line-height: 1.1;
+  color: var(--paper);
+}
+
+.flag {
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji",
+    "Twemoji Mozilla", sans-serif;
+  line-height: 1;
+  display: inline-block;
+}
+
+.flag-xs {
+  font-size: 20px;
+}
+
+.flag-sm {
+  font-size: 30px;
+}
+
+.flag-md {
+  font-size: 40px;
+}
+
+.flag-lg {
+  font-size: clamp(38px, 11vw, 54px);
+}
+
+.flag-xl {
+  font-size: clamp(56px, 17vw, 84px);
+}
+
+/* Text answers are sentences, not single digits: quieter than the
+   shared .opt used for the maths game. */
+.opts .opt {
+  position: relative;
+  font-size: 16px;
+  font-weight: 700;
+  text-align: left;
+  padding: 14px 12px 14px 30px;
+  min-height: 62px;
+  display: flex;
+  align-items: center;
+}
+
+.opts--flags {
+  grid-template-columns: 1fr 1fr;
+}
+
+.opts--flags .opt {
+  justify-content: center;
+  padding: 10px;
+  min-height: 82px;
+}
+
+.opt .key {
+  position: absolute;
+  left: 10px;
+  top: 9px;
+  font-family: var(--util);
+  font-size: 10px;
+  color: var(--paper-dim);
+}
+
+.opt-text {
+  line-height: 1.25;
+}
+
+.opt.faded {
+  opacity: 0.4;
+}
+
+/* ---------- reveal ---------- */
+
+.reveal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s3);
+  border-top: 1px solid var(--gold-soft);
+  padding-top: 14px;
+}
+
+.reveal .note {
+  margin: 0;
+}
+
+.reveal-body {
+  display: flex;
+  gap: var(--s3);
+  align-items: center;
+}
+
+.reveal-body > span:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.reveal-body strong {
+  font-family: var(--display);
+  font-variation-settings: "opsz" 60;
+  font-size: 19px;
+}
+
+/* ---------- summary, progress, board ---------- */
+
+.final {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+}
+
+.final-score {
+  font-family: var(--display);
+  font-variation-settings: "opsz" 120;
+  font-weight: 900;
+  font-size: 64px;
+  line-height: 1;
+  color: var(--gold);
+}
+
+.log {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.log li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid rgba(242, 180, 65, 0.16);
+  font-size: 15px;
+}
+
+.log li > span:nth-child(2) {
+  flex: 1;
+}
+
+.log li.miss {
+  color: var(--coral);
+}
+
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s4);
+}
+
+.progress-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.card-name {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.board {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.board li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 0;
+  border-bottom: 1px solid rgba(242, 180, 65, 0.16);
+  font-size: 15px;
+}
+
+.rank {
+  color: var(--paper-dim);
+}
+
+.board-name {
+  flex: 1;
+  font-weight: 700;
+}
+
+.board .score {
+  color: var(--gold);
+  font-size: 15px;
+}
+
+.row--split > .btn {
+  flex: 1;
+}
+
+@media (max-width: 480px) {
+  .opts {
+    grid-template-columns: 1fr;
+  }
+
+  .opts--flags {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .final-score {
+    font-size: 54px;
+  }
+}

@@ -1,0 +1,128 @@
+/* Hub-only layout. Everything visual comes from the shared tokens. */
+
+.lead {
+  max-width: 58ch;
+}
+
+.tiles {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--gap);
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+}
+
+/* The li stretches to the row; the card fills it. Sizing the card with
+   height:100% instead let the body shrink and its last line slid under
+   the button. */
+.tiles li {
+  display: flex;
+}
+
+/* a.tile, not .tile: the shared `a.card` rule is element+class, so a bare
+   class here would lose and the card would stay display:block. */
+a.tile {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s3);
+}
+
+.tile-body {
+  flex: 1 0 auto;
+}
+
+.tile-go {
+  flex: none;
+}
+
+.tile-art {
+  width: 56px;
+  height: 56px;
+  flex: none;
+}
+
+.tile h2 {
+  color: var(--gold);
+  font-size: 26px;
+  margin-bottom: 2px;
+}
+
+.tile-ages {
+  margin: 0 0 8px;
+}
+
+.tile-blurb {
+  margin: 0 0 10px;
+  color: rgba(255, 244, 222, 0.92);
+  font-size: 16px;
+}
+
+.tile-progress {
+  margin: 0;
+  color: var(--foam);
+}
+
+/* Looks and presses like the primary button, but stays a plain span: the
+   whole tile is the link, so the child must not be interactive itself. */
+.tile-go {
+  display: block;
+  align-self: stretch;
+  text-align: center;
+  background: var(--gold);
+  color: #0a1b2a;
+  border-radius: var(--radius-sm);
+  padding: 14px 26px;
+  font-weight: 800;
+  font-size: 17px;
+  box-shadow: 0 5px 0 var(--gold-dim);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.tile:active .tile-go {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 var(--gold-dim);
+}
+
+.offline-state {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  margin: var(--s4) 0 0;
+}
+
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: rgba(255, 244, 222, 0.25);
+  flex: none;
+}
+
+.dot.on {
+  background: var(--foam);
+  box-shadow: 0 0 8px var(--foam);
+}
+
+.grown-body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s1);
+}
+
+.grown-body .story {
+  margin: 6px 0 10px;
+  font-size: 15px;
+}
+
+.grown-body .btn--ghost {
+  width: auto;
+}
+
+@media (max-width: 660px) {
+  .tile h2 {
+    font-size: 23px;
+  }
+}

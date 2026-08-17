@@ -1,0 +1,827 @@
+@import "./fonts.css";
+
+/* ============================================================
+   Amber Sea — one design system for every voyage on the site.
+   Tokens first; components below are shared by the hub,
+   The Golden Compass and Atlas Drill.
+   ============================================================ */
+
+:root {
+  /* palette */
+  --abyss: #061626;
+  --deep: #0c2439;
+  --shoal: #123a54;
+  --gold: #f2b441;
+  --gold-dim: #9a7530;
+  --gold-soft: rgba(242, 180, 65, 0.28);
+  --gold-faint: rgba(242, 180, 65, 0.12);
+  --foam: #79e3c0;
+  /* coral for text; coral-line is the stronger border/mark variant.
+     Both verified >= 4.5:1 (text) / 3:1 (UI) on every page background. */
+  --coral: #ff9a8c;
+  --coral-line: #ff8272;
+  --paper: #fff4de;
+  --paper-70: rgba(255, 244, 222, 0.7);
+  --paper-dim: rgba(255, 244, 222, 0.68);
+  --win-bg: #0d3b32;
+  --miss-bg: #401e1a;
+  /* Opaque blues: text panels sit on these so the star field never
+     twinkles behind a sentence. Contrast verified against every tier. */
+  --card-top: #0f2c44;
+  --card-bottom: #0b2137;
+  --surface: #14314a;
+
+  /* type */
+  --display: "Fraunces", Georgia, serif;
+  --body: "Nunito", system-ui, -apple-system, sans-serif;
+  --util: "Space Mono", ui-monospace, SFMono-Regular, monospace;
+
+  /* rhythm — every gap in the app comes from this scale */
+  --s1: 6px;
+  --s2: 10px;
+  --s3: 14px;
+  --s4: 20px;
+  --s5: 28px;
+  --s6: 40px;
+  --gap: var(--s3);
+  --radius: 18px;
+  /* one step in from --radius, so a control never looks looser than
+     the card holding it */
+  --radius-sm: 12px;
+  --bar-h: 54px;
+  --pad: 18px;
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-l: env(safe-area-inset-left, 0px);
+  --safe-r: env(safe-area-inset-right, 0px);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--abyss);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100%;
+  overflow-wrap: break-word;
+  background:
+    radial-gradient(120% 80% at 50% -10%, var(--shoal) 0%, var(--deep) 45%, var(--abyss) 100%)
+    fixed;
+  color: var(--paper);
+  font-family: var(--body);
+  font-size: 17px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  overscroll-behavior-y: none;
+}
+
+button,
+input {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 3px solid var(--foam);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+/* Visible only to screen readers. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip {
+  position: absolute;
+  left: 8px;
+  top: -60px;
+  z-index: 50;
+  background: var(--gold);
+  color: #0a1b2a;
+  font-weight: 800;
+  padding: 10px 18px;
+  border-radius: 0 0 12px 12px;
+  text-decoration: none;
+  transition: top 0.15s ease;
+}
+
+.skip:focus {
+  top: 0;
+}
+
+/* Programmatic focus targets (headings, panels) must not draw a ring
+   when moved to by script, only a subtle one for keyboard users. */
+[tabindex="-1"]:focus {
+  outline: none;
+}
+
+/* ---------- shell ---------- */
+
+.shell {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  height: calc(var(--bar-h) + var(--safe-t));
+  padding: var(--safe-t) max(14px, var(--safe-l)) 0 max(14px, var(--safe-r));
+  background: rgba(6, 22, 38, 0.82);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--gold-soft);
+}
+
+.shell-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  text-decoration: none;
+  color: var(--paper);
+  margin-right: auto;
+  min-width: 0;
+}
+
+.shell-brand svg {
+  width: 26px;
+  height: 26px;
+  flex: none;
+}
+
+.shell-brand span {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: 17px;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.shell-nav {
+  display: flex;
+  gap: var(--s1);
+}
+
+.shell-nav a {
+  font-family: var(--util);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  color: var(--paper-dim);
+  padding: 7px 11px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.shell-nav a[aria-current="page"] {
+  color: var(--gold);
+  border-color: var(--gold-soft);
+  background: var(--gold-faint);
+}
+
+/* game header: a way out, and how far along you are */
+.shell--game {
+  gap: var(--s2);
+}
+
+.shell-back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin-left: -6px;
+  flex: none;
+  border-radius: 50%;
+  color: var(--gold);
+  text-decoration: none;
+}
+
+.shell-back svg {
+  width: 24px;
+  height: 24px;
+}
+
+.shell-back:hover {
+  background: var(--gold-faint);
+}
+
+.shell-progress {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+}
+
+.shell-progress-label {
+  margin: 0;
+  font-family: var(--util);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--paper-70);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Sailed track, ship at the head, stops still to come dashed out ahead.
+   Scoped to the header: `.track` is also the switch's rail. */
+.shell-progress .track {
+  position: relative;
+  flex: 1;
+  min-width: 60px;
+  height: 3px;
+  border-radius: 999px;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(255, 244, 222, 0.28) 0 5px,
+    transparent 5px 11px
+  );
+}
+
+.shell-progress .track > i {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--gold);
+  box-shadow: 0 0 8px rgba(242, 180, 65, 0.5);
+  transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.shell-progress .ship {
+  position: absolute;
+  top: 50%;
+  left: var(--at, 0%);
+  width: 26px;
+  height: 28px;
+  transform: translate(-50%, -58%);
+  transition: left 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+.shell-count {
+  margin: 0;
+  flex: none;
+  font-family: var(--util);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gold);
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.shell-progress [hidden] {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shell-progress .track > i,
+  .shell-progress .ship {
+    transition: none;
+  }
+}
+
+.lang {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 999px;
+  background: rgba(6, 22, 38, 0.6);
+  border: 1px solid var(--gold-soft);
+  flex: none;
+}
+
+.lang button {
+  font-family: var(--util);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  background: none;
+  border: none;
+  color: var(--paper-dim);
+  border-radius: 999px;
+  padding: 6px 12px;
+  touch-action: manipulation;
+}
+
+.lang button[aria-pressed="true"] {
+  background: var(--gold);
+  color: #0a1b2a;
+  font-weight: 700;
+}
+
+/* ---------- layout ---------- */
+
+.wrap {
+  position: relative;
+  z-index: 1;
+  max-width: 880px;
+  margin: 0 auto;
+  padding: var(--s4) max(var(--pad), var(--safe-r)) calc(var(--s6) + var(--safe-b))
+    max(var(--pad), var(--safe-l));
+}
+
+.wrap--narrow {
+  max-width: 640px;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+  align-items: center;
+}
+
+/* ---------- type ---------- */
+
+h1 {
+  font-family: var(--display);
+  font-variation-settings: "opsz" 120;
+  font-weight: 900;
+  font-size: clamp(34px, 8vw, 64px);
+  line-height: 0.98;
+  margin: 0.15em 0 0.1em;
+  color: var(--gold);
+}
+
+h1 .sub {
+  display: block;
+  font-size: 0.3em;
+  font-weight: 400;
+  color: var(--paper);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* An h1 that has to look like a label: the play screens are one long
+   activity, so their heading is the stop line, not a title. */
+.h-plain {
+  font-family: var(--util);
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+h2 {
+  font-family: var(--display);
+  font-variation-settings: "opsz" 60;
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.eyebrow {
+  font-family: var(--util);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin: 0;
+}
+
+.speaker {
+  font-family: var(--util);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--foam);
+}
+
+.story {
+  margin: 6px 0 14px;
+  color: rgba(255, 244, 222, 0.92);
+}
+
+.prompt {
+  font-family: var(--display);
+  font-variation-settings: "opsz" 60;
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 1.35;
+  margin: 0 0 16px;
+}
+
+.mono {
+  font-family: var(--util);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+}
+
+.dim {
+  color: var(--paper-dim);
+}
+
+/* ---------- surfaces ---------- */
+
+.card {
+  background: linear-gradient(180deg, var(--card-top), var(--card-bottom));
+  border: 1px solid var(--gold-soft);
+  border-radius: var(--radius);
+  padding: var(--s4);
+}
+
+/* Vertical rhythm inside a card comes from one gap, so every block —
+   art, prompt, answers, hint, feedback — sits on the same scale. */
+.card--flow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s3);
+}
+
+.card--flow > * {
+  margin: 0;
+}
+
+a.card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+a.card:hover {
+  border-color: var(--gold);
+  transform: translateY(-2px);
+}
+
+/* ---------- controls ---------- */
+
+.btn {
+  background: var(--gold);
+  border: none;
+  color: #0a1b2a;
+  border-radius: var(--radius-sm);
+  padding: 14px 28px;
+  font-weight: 800;
+  font-size: 17px;
+  box-shadow: 0 5px 0 var(--gold-dim);
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 var(--gold-dim);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+  box-shadow: none;
+}
+
+.btn--ghost {
+  background: none;
+  border: 2px solid rgba(242, 180, 65, 0.35);
+  color: var(--gold);
+  padding: 13px 20px;
+  font-weight: 700;
+  font-size: 15px;
+  box-shadow: none;
+}
+
+.btn--ghost:hover {
+  background: var(--gold-faint);
+}
+
+.btn--ghost:active {
+  transform: none;
+  box-shadow: none;
+}
+
+.opts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--s2);
+}
+
+.opt {
+  background: var(--surface);
+  color: var(--paper);
+  border: 2px solid rgba(242, 180, 65, 0.35);
+  border-radius: var(--radius-sm);
+  padding: 14px 10px;
+  font-weight: 800;
+  font-size: 20px;
+  min-height: 56px;
+  transition: transform 0.12s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.opt:hover:not(:disabled) {
+  background: #1c3f5c;
+  border-color: var(--gold);
+  transform: translateY(-2px);
+}
+
+.opt:disabled {
+  cursor: default;
+  opacity: 0.42;
+}
+
+.opt.right {
+  background: var(--win-bg);
+  border-color: var(--foam);
+  color: var(--foam);
+  opacity: 1;
+}
+
+.opt.wrong {
+  background: var(--miss-bg);
+  border-color: var(--coral-line);
+  color: var(--coral);
+  opacity: 1;
+}
+
+/* never signal by colour alone */
+.opt.right::after,
+.opt.wrong::after {
+  margin-left: 0.45em;
+  font-family: var(--util);
+  font-size: 0.8em;
+}
+
+.opt.right::after {
+  content: "\2713";
+}
+
+.opt.wrong::after {
+  content: "\2717";
+}
+
+.seg {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s1);
+}
+
+.seg button {
+  border: 1px solid var(--gold-soft);
+  background: transparent;
+  color: var(--paper);
+  border-radius: 999px;
+  padding: 9px 14px;
+  font-size: 14px;
+  min-height: 40px;
+}
+
+.seg button.on {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #0a1b2a;
+  font-weight: 700;
+}
+
+/* Toggle switch — a real button with role="switch", so the state is
+   exposed to assistive tech rather than implied by the artwork. */
+.switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: none;
+  border: none;
+  padding: 8px 0;
+  min-height: 44px;
+  color: var(--paper);
+  font-size: 15px;
+  text-align: left;
+}
+
+.switch .track {
+  position: relative;
+  flex: none;
+  width: 46px;
+  height: 27px;
+  border-radius: 999px;
+  background: rgba(255, 244, 222, 0.14);
+  border: 1px solid var(--gold-soft);
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.switch .track::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  background: var(--paper-dim);
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.switch[aria-checked="true"] .track {
+  background: rgba(242, 180, 65, 0.32);
+  border-color: var(--gold);
+}
+
+.switch[aria-checked="true"] .track::after {
+  transform: translateX(19px);
+  background: var(--gold);
+}
+
+.switch:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s1);
+}
+
+.label {
+  font-family: var(--util);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--paper-dim);
+}
+
+.input {
+  border: 1px solid var(--gold-soft);
+  background: var(--abyss);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 16px;
+  color: var(--paper);
+}
+
+.input::placeholder {
+  color: rgba(255, 244, 222, 0.35);
+}
+
+/* ---------- feedback ---------- */
+
+.note {
+  border-left: 3px solid var(--gold);
+  padding: 2px 0 2px 14px;
+  margin: 16px 0 0;
+  color: rgba(255, 244, 222, 0.85);
+}
+
+.note b {
+  color: var(--gold);
+}
+
+.note--win {
+  border-color: var(--foam);
+}
+
+.note--win b {
+  color: var(--foam);
+}
+
+.note--miss {
+  border-color: var(--coral-line);
+}
+
+.note--miss b {
+  color: var(--coral);
+}
+
+.meter {
+  height: 4px;
+  background: rgba(255, 244, 222, 0.12);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.meter i {
+  display: block;
+  height: 100%;
+  background: var(--gold);
+}
+
+/* ---------- motion ---------- */
+
+.fade {
+  animation: fade 0.45s ease both;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.pop {
+  animation: pop 0.5s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ---------- small screens ---------- */
+
+@media (max-width: 660px) {
+  body {
+    font-size: 16px;
+  }
+
+  .wrap {
+    --pad: 14px;
+    padding-top: var(--s3);
+    padding-bottom: calc(40px + var(--safe-b));
+  }
+
+  .card {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .shell {
+    padding-left: max(10px, var(--safe-l));
+    padding-right: max(10px, var(--safe-r));
+    gap: var(--s2);
+  }
+
+  .shell-brand span {
+    font-size: 15px;
+  }
+
+  .shell-nav a {
+    padding: 7px 9px;
+    font-size: 11px;
+  }
+
+  .prompt {
+    font-size: 20px;
+    margin-bottom: 14px;
+  }
+
+  .opts {
+    grid-template-columns: repeat(auto-fit, minmax(84px, 1fr));
+    gap: var(--s2);
+  }
+
+  .opt {
+    font-size: 21px;
+    padding: 16px 6px;
+  }
+
+  .btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 420px) {
+  .shell-brand span {
+    display: none;
+  }
+}

@@ -1,0 +1,162 @@
+/* Voyage-specific pieces: the star field, the puzzle art, the compass pieces. */
+
+#stars {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.art {
+  display: block;
+  width: 100%;
+  max-width: 340px;
+  height: auto;
+  margin: 0 auto 18px;
+}
+
+.pieces {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.piece {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px dashed rgba(242, 180, 65, 0.35);
+}
+
+.piece.got {
+  border: 2px solid var(--gold);
+  background: radial-gradient(circle at 35% 30%, #ffe49b, var(--gold));
+  box-shadow: 0 0 12px rgba(242, 180, 65, 0.5);
+}
+
+.score {
+  margin-top: 16px;
+}
+
+.grownup {
+  margin-top: 26px;
+  font-size: 15px;
+  color: var(--paper-70);
+}
+
+.grownup summary {
+  cursor: pointer;
+  font-family: var(--util);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold);
+  padding: 8px 0;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+.grownup ol {
+  padding-left: 20px;
+}
+
+.grownup li {
+  margin: 5px 0;
+}
+
+@media (max-width: 660px) {
+  .art {
+    max-width: 290px;
+    margin-bottom: 14px;
+  }
+}
+
+/* ---------- the toll tray (stop 9) ---------- */
+
+.tray {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s2);
+  padding: var(--s3);
+  border: 1px dashed var(--gold-soft);
+  border-radius: var(--radius-sm);
+  background: rgba(6, 22, 38, 0.4);
+}
+
+.coins {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+}
+
+.coin {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 2px solid rgba(242, 180, 65, 0.45);
+  background: radial-gradient(circle at 34% 28%, #1d4462, #10293f);
+  color: var(--paper);
+  font-family: var(--util);
+  font-size: 19px;
+  font-weight: 700;
+  transition: transform 0.12s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.coin:hover {
+  transform: translateY(-2px);
+  border-color: var(--gold);
+}
+
+/* A coin in the basket is gold side up and sits lower, as if dropped in. */
+.coin.in {
+  background: radial-gradient(circle at 34% 28%, #ffe49b, var(--gold));
+  border-color: var(--gold);
+  color: #0a1b2a;
+  box-shadow: 0 0 12px rgba(242, 180, 65, 0.45);
+  transform: translateY(3px);
+}
+
+.tray-sum {
+  margin: 0;
+  font-size: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tray-sum b {
+  font-family: var(--util);
+  font-size: 14px;
+  color: var(--gold);
+}
+
+.tray-good {
+  color: var(--foam);
+  font-weight: 700;
+}
+
+.tray-over {
+  color: var(--coral);
+}
+
+.tray-help {
+  margin: 0;
+}
+
+.tray-reset {
+  align-self: flex-start;
+  width: auto;
+}
+
+@media (max-width: 660px) {
+  .coin {
+    width: 48px;
+    height: 48px;
+  }
+
+  .tray-reset {
+    width: auto;
+  }
+}
