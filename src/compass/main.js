@@ -7,7 +7,7 @@ import { load, save } from "../lib/store.js";
 import * as haptic from "../lib/haptics.js";
 import { STOPS, LANDS, SKILLS } from "./data.js";
 import { startSky } from "./sky.js";
-import { coinTray, wireCoinTray } from "./coins.js";
+import { createWidgetState, renderWidget, wireWidget } from "./widgets.js";
 
 const UI = {
   orders: { en: "Your orders", es: "Tu misión" },
@@ -76,7 +76,7 @@ let order = [];
 let hintShown = false;
 let wrongPicks = new Set();
 let answered = false;
-let basket = new Set(); // coins dropped in the toll basket, for stop 9
+let widgetState = null; // hands-on prop state for the stops that have one
 
 const main = document.getElementById("main");
 mountShell(document.getElementById("shell"), "compass");
@@ -97,7 +97,7 @@ function enterStop(index) {
   answered = false;
   hintShown = false;
   wrongPicks = new Set();
-  basket = new Set();
+  widgetState = createWidgetState(STOPS[index].widget);
   order = shuffled(STOPS[index].options);
   save("compass:save", { stop, solved, clean });
 }
@@ -165,14 +165,14 @@ function playScreen() {
         <p class="story">${t(s.story)}</p>
         ${s.art ?? ""}
         ${s.alt ? `<p class="sr-only">${t(UI.picture)} ${t(s.alt)}</p>` : ""}
-        <div id="widget">${s.widget ? coinTray(s.widget, basket) : ""}</div>
+        <div id="widget">${s.widget ? renderWidget(s.widget, widgetState) : ""}</div>
         <p class="prompt" id="prompt">${t(s.prompt)}</p>
         <div class="opts" role="group" aria-labelledby="prompt">
           ${order
             .map(
               (value, index) =>
                 `<button class="opt" type="button" data-value="${value}"
-                   data-index="${index}">${value}</button>`,
+                   data-index="${index}"><span class="key" aria-hidden="true">${index + 1}</span>${value}</button>`,
             )
             .join("")}
         </div>
@@ -209,11 +209,11 @@ function playScreen() {
   }
 }
 
-/** Redraw the toll tray in place, so the rest of the stop stays put. */
+/** Redraw a prop in place, so the rest of the stop stays put. */
 function mountWidget(widget) {
   const root = document.getElementById("widget");
-  root.innerHTML = coinTray(widget, basket);
-  wireCoinTray(root, widget, basket, () => mountWidget(widget));
+  root.innerHTML = renderWidget(widget, widgetState);
+  wireWidget(root, widget, widgetState, () => mountWidget(widget));
 }
 
 function showHint() {

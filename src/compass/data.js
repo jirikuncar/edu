@@ -402,8 +402,8 @@ export const STOPS = [
 
   {
     land: 3,
-    art: art.ring,
-    alt: ART_ALT.ring,
+    // hands-on: draw the handshakes and count them
+    widget: { kind: "ring", people: 5 },
     options: [8, 10, 12, 20],
     answer: 1,
     story: {

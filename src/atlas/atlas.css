@@ -183,7 +183,7 @@
   font-size: 16px;
   font-weight: 700;
   text-align: left;
-  padding: 14px 12px 14px 30px;
+  padding: 14px 12px;
   min-height: 62px;
   display: flex;
   align-items: center;
@@ -197,15 +197,6 @@
   justify-content: center;
   padding: 10px;
   min-height: 82px;
-}
-
-.opt .key {
-  position: absolute;
-  left: 10px;
-  top: 9px;
-  font-family: var(--util);
-  font-size: 10px;
-  color: var(--paper-dim);
 }
 
 .opt-text {
@@ -337,6 +328,12 @@
 
 .row--split > .btn {
   flex: 1;
+}
+
+@media (min-width: 700px) {
+  .opts .opt {
+    padding-left: 30px;
+  }
 }
 
 @media (max-width: 480px) {

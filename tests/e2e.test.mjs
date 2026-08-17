@@ -279,6 +279,65 @@ describe("the golden compass", () => {
     await context.close();
   });
 
+  test("the handshake ring draws every pair once, in its own colour", async () => {
+    const { context, page } = await newPage();
+    await page.goto(COMPASS);
+    await page.evaluate(() =>
+      localStorage.setItem(
+        "edu:compass:save",
+        JSON.stringify({ stop: 9, solved: 9, clean: 9 }),
+      ),
+    );
+    await page.reload();
+    await page.click("#start");
+    await page.waitForSelector(".ring");
+
+    const shake = async (a, b) => {
+      await page.locator(`.person[data-person="${a}"]`).click();
+      await page.locator(`.person[data-person="${b}"]`).click();
+    };
+
+    await shake(0, 1);
+    assert.match(await page.locator(".ring-count").innerText(), /Handshakes so far: 1/);
+
+    // the same pair cannot shake twice, in either order
+    await shake(1, 0);
+    assert.equal(await page.locator(".tray-over").count(), 1);
+    assert.match(await page.locator(".ring-count").innerText(), /Handshakes so far: 1/);
+
+    for (let a = 0; a < 5; a++)
+      for (let b = a + 1; b < 5; b++) if (!(a === 0 && b === 1)) await shake(a, b);
+
+    assert.match(await page.locator(".ring-count").innerText(), /Handshakes so far: 10/);
+    assert.equal(await page.locator(".ring svg line").count(), 10);
+    const colours = await page.evaluate(
+      () =>
+        new Set(
+          [...document.querySelectorAll(".ring svg line")].map((line) =>
+            line.getAttribute("stroke"),
+          ),
+        ).size,
+    );
+    assert.equal(colours, 10, "each handshake needs its own colour");
+
+    const fits = await page.evaluate(() => {
+      const ring = document.querySelector(".ring").getBoundingClientRect();
+      return [...document.querySelectorAll(".person")].every((person) => {
+        const box = person.getBoundingClientRect();
+        return (
+          box.left >= ring.left - 1 &&
+          box.right <= ring.right + 1 &&
+          box.top >= ring.top - 1 &&
+          box.bottom <= ring.bottom + 1
+        );
+      });
+    });
+    assert.ok(fits, "every apprentice must sit inside the ring box");
+
+    await axeCheck(page, "handshake ring");
+    await context.close();
+  });
+
   test("an interrupted voyage can be resumed", async () => {
     const { context, page } = await newPage();
     await page.goto(COMPASS);
@@ -491,6 +550,45 @@ describe("offline and install", () => {
       "Safari needs an apple-touch-icon to install",
     );
     await context.close();
+  });
+});
+
+/* ------------------------------------------------------------------ */
+
+describe("answer buttons", () => {
+  test("both games show the same number hints, and only where a keyboard is likely", async () => {
+    for (const [width, expected] of [
+      [430, false],
+      [1100, true],
+    ]) {
+      const { context, page } = await newPage({ viewport: { width, height: 900 } });
+
+      await page.goto(COMPASS);
+      await page.click("#start");
+      await page.waitForSelector(".opt");
+      assert.equal(
+        await page.locator(".opt .key").first().isVisible(),
+        expected,
+        `compass key hints at ${width}px`,
+      );
+      assert.deepEqual(
+        await page.locator(".opt .key").allInnerTexts(),
+        ["1", "2", "3"],
+        "the badge must name the key that answers",
+      );
+
+      await page.goto(ATLAS);
+      await page.getByRole("button", { name: "Start round" }).waitFor({ timeout: 20_000 });
+      await page.getByRole("button", { name: "Start round" }).click();
+      await page.waitForSelector(".opt");
+      assert.equal(
+        await page.locator(".opt .key").first().isVisible(),
+        expected,
+        `atlas key hints at ${width}px`,
+      );
+
+      await context.close();
+    }
   });
 });
 

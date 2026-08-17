@@ -529,6 +529,7 @@ a.card:hover {
 }
 
 .opt {
+  position: relative;
   background: var(--surface);
   color: var(--paper);
   border: 2px solid rgba(242, 180, 65, 0.35);
@@ -563,6 +564,25 @@ a.card:hover {
   border-color: var(--coral-line);
   color: var(--coral);
   opacity: 1;
+}
+
+/* Keyboard shortcut badge. Hidden where there is no keyboard to speak of;
+   the shortcut still works if one is attached. */
+.opt .key {
+  position: absolute;
+  left: 9px;
+  top: 7px;
+  display: none;
+  font-family: var(--util);
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--paper-dim);
+}
+
+@media (min-width: 700px) {
+  .opt .key {
+    display: block;
+  }
 }
 
 /* never signal by colour alone */
