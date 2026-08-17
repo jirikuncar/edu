@@ -5,6 +5,7 @@ import { mountShell, bindTitle, SITE, SECTIONS } from "../lib/shell.js";
 import { t, onLang } from "../lib/i18n.js";
 import {
   hapticsSupported,
+  hapticsAreFlat,
   hapticsEnabled,
   setHaptics,
   tap,
@@ -62,8 +63,12 @@ const UI = {
   grown: { en: "Settings and notes for a grown-up", es: "Ajustes y notas para un adulto" },
   haptics: { en: "Vibration on answers", es: "Vibración al responder" },
   hapticsNone: {
-    en: "This device has no vibration motor available to the browser.",
-    es: "Este dispositivo no ofrece vibración al navegador.",
+    en: "This browser does not let a web page vibrate the device, so there is nothing to turn on.",
+    es: "Este navegador no permite que una página web haga vibrar el dispositivo, así que no hay nada que activar.",
+  },
+  hapticsFlat: {
+    en: "On iPhone and iPad every cue feels the same: Safari gives web pages one short tap and no patterns.",
+    es: "En iPhone y iPad todos los avisos se sienten igual: Safari solo permite un toque corto, sin patrones.",
   },
   privacy: {
     en: "Nothing leaves the device. Progress, names and high scores live in this browser's own storage, and there are no accounts, adverts or trackers.",
@@ -231,7 +236,13 @@ function paint() {
             <span class="track" aria-hidden="true"></span>
             <span>${t(UI.haptics)}</span>
           </button>
-          ${hapticsSupported() ? "" : `<p class="mono dim">${t(UI.hapticsNone)}</p>`}
+          ${
+            hapticsSupported()
+              ? hapticsAreFlat()
+                ? `<p class="mono dim">${t(UI.hapticsFlat)}</p>`
+                : ""
+              : `<p class="mono dim">${t(UI.hapticsNone)}</p>`
+          }
           <p class="story">${t(UI.privacy)}</p>
           <button class="btn btn--ghost" id="reset" type="button">${t(UI.reset)}</button>
           <p class="mono dim" id="reset-note" role="status">${flash}</p>

@@ -24,8 +24,11 @@ Live at <https://jirikuncar.github.io/edu/>.
 - **Accessible.** Landmarks, live regions, managed focus, keyboard play
   (number keys answer, Enter advances), 44px touch targets and WCAG AA
   contrast on every text tier — checked by axe in the test suite.
-- **Haptics** on answers where the browser supports `navigator.vibrate`, with
-  a switch on the hub to turn them off.
+- **Haptics** on answers, with a switch on the hub to turn them off. Android
+  gets patterned vibration through `navigator.vibrate`; iOS has no such API,
+  so Safari 17.4+ gets a single system tick by toggling a hidden `switch`
+  control inside the tap. Everywhere else it is a no-op and the setting says
+  so.
 
 ## Working on it
 
@@ -33,13 +36,14 @@ Live at <https://jirikuncar.github.io/edu/>.
 pnpm install
 pnpm dev          # http://localhost:5173/edu/
 pnpm build        # -> dist/
-pnpm test         # builds nothing: run pnpm build first
+pnpm test         # tests run against dist/, so build first
 ```
 
-`pnpm test` starts its own preview server and drives a real Chromium through
-both games: full playthroughs, offline reloads, the install manifest, phone
-layouts down to 280px, virtual-keyboard layout and an axe audit of every
-screen in both languages.
+`pnpm test` serves `dist/` from the test process itself and drives a real
+Chromium through both games: full playthroughs, offline reloads, the install
+manifest, phone layouts down to 280px, virtual-keyboard layout and an axe
+audit of every screen in both languages. The files run in parallel and the
+whole suite takes about four seconds.
 
 Two generators are checked in and rarely need re-running:
 

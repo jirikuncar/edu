@@ -1,0 +1,32 @@
+version: 2
+updates:
+  # Actions are pinned to commit SHAs; Dependabot rewrites the SHA and the
+  # trailing version comment together.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    commit-message:
+      prefix: ci
+    groups:
+      actions:
+        patterns: ["*"]
+
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    commit-message:
+      prefix: deps
+    open-pull-requests-limit: 5
+    groups:
+      # One PR for the build and test tooling, one for anything shipped to
+      # the browser, so a runtime bump is easy to spot and re-test.
+      tooling:
+        dependency-type: development
+        patterns: ["*"]
+      runtime:
+        dependency-type: production
+        patterns: ["*"]
