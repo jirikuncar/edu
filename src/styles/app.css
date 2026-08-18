@@ -926,6 +926,7 @@ a.card:hover {
 
   .story {
     margin: 0;
+    line-height: 1.45;
   }
 
   .note {

@@ -23,14 +23,14 @@
    the question, it is not the question. Once answered it shrinks again,
    staying available for reference while the explanation takes the room. */
 .card--answered .art {
-  max-height: min(9vh, 78px);
+  max-height: min(8vh, 70px);
 }
 
 .art {
   display: block;
   width: 100%;
   max-width: 340px;
-  max-height: min(15vh, 130px);
+  max-height: min(13vh, 130px);
   height: auto;
   margin: 0 auto;
 }
@@ -215,9 +215,9 @@
    not the size. */
 .ring {
   position: relative;
-  width: min(100%, 340px, 24vh * 3 / 2);
+  width: min(100%, 340px, 21vh * 3 / 2);
   aspect-ratio: 3 / 2;
-  max-height: 24vh;
+  max-height: 21vh;
   margin: 0 auto;
   align-self: center;
 }
