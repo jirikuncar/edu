@@ -70,8 +70,13 @@ export function toFeature(polygons, a2) {
 /** Degrees and minutes, the way a chart margin would print them. */
 export const dms = ([lon, lat]) => {
   const part = (value, positive, negative) => {
-    const degrees = Math.floor(Math.abs(value));
-    const minutes = Math.round((Math.abs(value) - degrees) * 60);
+    let degrees = Math.floor(Math.abs(value));
+    let minutes = Math.round((Math.abs(value) - degrees) * 60);
+    // 59.8 minutes rounds to 60: carry it, or Castries reads 60°60′W.
+    if (minutes === 60) {
+      minutes = 0;
+      degrees += 1;
+    }
     return `${degrees}°${String(minutes).padStart(2, "0")}′${value >= 0 ? positive : negative}`;
   };
   return `${part(lat, "N", "S")} ${part(lon, "E", "W")}`;
