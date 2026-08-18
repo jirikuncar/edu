@@ -111,6 +111,7 @@ export const art = {
       <path d="M112 34 L112 84 L56 112 L56 62 Z" fill="rgba(242,180,65,.04)"/>
       <path d="M28 20 L84 48 M28 48 L84 20" stroke-dasharray="3 5"/>
       <path d="M0 59 L56 87 M56 87 L112 59 M56 62 L56 112" stroke-dasharray="3 5"/>
+      <path d="M28 48 L28 98 M84 48 L84 98" stroke-dasharray="3 5"/>
     </g>`,
     340,
     124,
@@ -423,13 +424,13 @@ export const STOPS = [
 
   {
     land: 3,
-    art: art.pancake,
-    alt: ART_ALT.pancake,
+    // hands-on: drag the cuts and watch the pieces
+    widget: { kind: "pancake" },
     options: [6, 7, 8],
     answer: 1,
     story: {
-      en: "Tilda slides a pancake across the workbench. “Three straight cuts. No stacking, no folding. Be greedy.”",
-      es: "Tilda desliza una tortita por la mesa de trabajo. “Tres cortes rectos. Sin apilar ni doblar. Sé ambicioso.”",
+      en: "Tilda slides a pancake over. “Three straight cuts, no folding. Be greedy.”",
+      es: "Tilda desliza una tortita. “Tres cortes rectos, sin doblar. Sé ambicioso.”",
     },
     prompt: {
       en: "What is the largest number of pieces you can make?",

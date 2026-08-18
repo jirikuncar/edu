@@ -5,8 +5,13 @@ language switch and one installable app shell.
 
 - **The Golden Compass** — fifteen olympiad-style maths puzzles (Kangaroo
   Pre-Ecolier / Ecolier level), each guarded by a character on an island.
-- **Atlas Drill** — flags, capitals and country outlines for all 195 UN member
-  and observer states, weighted so the ones you keep missing come back.
+  Three of them are hands-on: drop coins in a basket until they pay the
+  toll, shake every pair of hands once, and drag three cuts across a
+  pancake until a seventh piece appears.
+- **Atlas Drill** — flags, capitals and country outlines for 194 countries,
+  weighted so the ones you keep missing come back. Answering fills the
+  blanks the question was holding — flag, country, capital — and marks the
+  capital on the map at its own coordinates.
 
 Live at <https://jirikuncar.github.io/edu/>.
 
@@ -26,6 +31,8 @@ Live at <https://jirikuncar.github.io/edu/>.
   country and capital names in the data set. Illustrations, the map and the
   hands-on props are sized in viewport units and step back once answered;
   the next step always sits in a sticky bar at the bottom of the screen.
+  Answering never moves the page: whatever a question hides waits as a
+  skeleton the answer settles into.
 - **Accessible.** Landmarks, live regions, managed focus, keyboard play
   (number keys answer, Enter advances), 44px touch targets and WCAG AA
   contrast on every text tier — checked by axe in the test suite.
@@ -54,9 +61,17 @@ files run in parallel and the whole suite takes about five seconds.
 Two generators are checked in and rarely need re-running:
 
 ```sh
-pnpm icons                     # public/icons/* from one inline SVG
-node scripts/fetch-fonts.mjs   # re-pull the self-hosted font subsets
+pnpm icons                        # public/icons/* from one inline SVG
+node scripts/fetch-fonts.mjs      # re-pull the self-hosted font subsets
+node scripts/fetch-capitals.mjs   # re-pull capital coordinates
 ```
+
+Map outlines come from [world-atlas][] (Natural Earth, public domain) and
+capital coordinates from [Natural Earth][ne] directly; both are vendored, so
+the app never calls out at runtime.
+
+[world-atlas]: https://github.com/topojson/world-atlas
+[ne]: https://www.naturalearthdata.com/
 
 ## Layout
 
@@ -68,6 +83,7 @@ src/styles/app.css    design tokens and shared components
 src/compass/          puzzle data, screens, the toll tray, star field
 src/atlas/            country data (EN/ES), TopoJSON decoding, React app
 public/data/          world-atlas countries-50m.json, served locally
+src/atlas/capitals.js capital coordinates, from Natural Earth (public domain)
 .github/workflows/    build, test and deploy to Pages
 ```
 

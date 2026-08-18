@@ -42,13 +42,15 @@ export const createRingState = () => ({ links: [], selected: null, note: null })
 
 const key = (a, b) => (a < b ? `${a}-${b}` : `${b}-${a}`);
 
-/** Evenly spaced around the ring, as percentages of the box. */
+/** Evenly spaced around the ring, as percentages of the seat box.
+ *  The box is already inset by one circle radius, so the seats use all of
+ *  it: pulling them in would only crowd the apprentices together. */
 const seats = (count) =>
   [...Array(count)].map((_, index) => {
     const angle = -Math.PI / 2 + (index * 2 * Math.PI) / count;
     return {
-      x: 50 + 38 * Math.cos(angle),
-      y: 50 + 40 * Math.sin(angle),
+      x: 50 + 50 * Math.cos(angle),
+      y: 50 + 50 * Math.sin(angle),
     };
   });
 

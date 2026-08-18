@@ -13,6 +13,7 @@ import {
 } from "d3-geo";
 
 import { COUNTRIES, BY_A2, CONTINENTS, CONTINENT_ES } from "./countries.js";
+import { CAPITALS } from "./capitals.js";
 import { decodeTopology, toFeature, dms, flagEmoji } from "./geo.js";
 import { setProgress, SECTIONS } from "../lib/shell.js";
 import { load, save } from "../lib/store.js";
@@ -67,6 +68,10 @@ const UI = {
   },
   sealed: { en: "chart sealed until you answer", es: "carta sellada hasta que respondas" },
   outlineOf: { en: (c) => `Outline of ${c}`, es: (c) => `Silueta de ${c}` },
+  outlineWithCapital: {
+    en: (country, capital) => `Outline of ${country}, with ${capital} marked`,
+    es: (country, capital) => `Silueta de ${country}, con ${capital} señalada`,
+  },
   outlineHidden: {
     en: "Country outline, hidden until you answer",
     es: "Silueta del país, oculta hasta que respondas",
@@ -243,6 +248,7 @@ const useShortScreen = () => {
 /* ---------- chart ---------- */
 
 function ChartCard({ feature, world, country, revealed, mode, lang, width = 520, height = 320 }) {
+  const capital = country ? CAPITALS[country.a2] : null;
   const path = useMemo(() => {
     if (!feature) return null;
     const centroid = geoCentroid(feature);
@@ -271,11 +277,17 @@ function ChartCard({ feature, world, country, revealed, mode, lang, width = 520,
     return { projection, gen, centroid, tiny: Math.max(x1 - x0, y1 - y0) < 22 };
   }, [feature, width, height]);
 
+  // Where the capital sits, in chart coordinates.
+  const pin = path && capital ? path.projection(capital) : null;
+  const pinLeft = pin ? pin[0] > width * 0.62 : false;
+
   const hidden = mode === "country" && !revealed;
   const label = hidden
     ? t(UI.outlineHidden)
     : country
-      ? t(UI.outlineOf, country.name[lang])
+      ? revealed && capital
+        ? t(UI.outlineWithCapital, country.name[lang], country.cap[lang])
+        : t(UI.outlineOf, country.name[lang])
       : "";
 
   return (
@@ -301,6 +313,20 @@ function ChartCard({ feature, world, country, revealed, mode, lang, width = 520,
                     className="locator"
                   />
                 )}
+                {revealed && pin && (
+                  <g className="capital">
+                    <circle cx={pin[0]} cy={pin[1]} r="9" className="capital-halo" />
+                    <circle cx={pin[0]} cy={pin[1]} r="3.4" className="capital-dot" />
+                    <text
+                      x={pin[0] + (pinLeft ? -13 : 13)}
+                      y={pin[1] + 5}
+                      textAnchor={pinLeft ? "end" : "start"}
+                      className="capital-name"
+                    >
+                      {country.cap[lang]}
+                    </text>
+                  </g>
+                )}
               </>
             )}
           </>
@@ -315,7 +341,9 @@ function ChartCard({ feature, world, country, revealed, mode, lang, width = 520,
         )}
       </svg>
       <p className="readout" aria-hidden="true">
-        <span>{path && !hidden ? dms(path.centroid) : "—°—′—  —°—′—"}</span>
+        <span>
+          {path && !hidden ? dms(revealed && capital ? capital : path.centroid) : "—°—′—  —°—′—"}
+        </span>
         <span>{country && (mode !== "country" || revealed) ? country.a2 : "··"}</span>
       </p>
     </div>
@@ -675,6 +703,13 @@ export default function AtlasDrill() {
   const target = question?.target;
   const timedOut = picked?.a2 === "__timeout__";
   const wasRight = revealed && !timedOut && picked.a2 === target.a2;
+  const place = target ? (
+    <span className="mono dim place">
+      {target.cap[lang]}
+      {target.alt ? ` · ${t(UI.alsoKnown, target.alt[lang])}` : ""}
+      {` · ${target.subName[lang]}`}
+    </span>
+  ) : null;
 
   return (
     <main id="main" className="wrap wrap--narrow" tabIndex={-1}>
@@ -826,41 +861,63 @@ export default function AtlasDrill() {
             revealed={revealed}
             mode={question.mode}
             lang={lang}
-            height={shortScreen ? (revealed ? 150 : 190) : 320}
+            height={shortScreen ? 190 : 320}
           />
 
           {!feature && <p className="note">{t(UI.noOutline)}</p>}
 
           <div className="ask">
-            {question.mode === "flag" && (
-              <>
-                <span className="eyebrow">{t(UI.whichFlag)}</span>
-                <strong id="ask">{target.name[lang]}</strong>
-                <span className="mono dim">{t(UI.capitalIs, target.cap[lang])}</span>
-              </>
-            )}
-            {question.mode === "capital" && (
-              <>
-                <span className="eyebrow">{t(UI.whichCapital)}</span>
-                <strong id="ask">{target.name[lang]}</strong>
-                <span className="flag flag-sm" aria-hidden="true">
-                  {flagEmoji(target.a2)}
-                </span>
-              </>
-            )}
-            {question.mode === "country" && (
-              <>
-                <span className="eyebrow">{t(UI.whichCountry)}</span>
+            <span className="eyebrow">
+              {question.mode === "flag"
+                ? t(UI.whichFlag)
+                : question.mode === "capital"
+                  ? t(UI.whichCapital)
+                  : t(UI.whichCountry)}
+            </span>
+
+            {/* One shape all the way through: whatever the question is
+                hiding waits as a skeleton, so answering fills the blanks
+                in without shifting anything below. */}
+            <span className={`ask-flag${question.mode === "country" ? " is-big" : ""}`}>
+              {revealed || question.mode !== "flag" ? (
                 <span
-                  className="flag flag-xl"
-                  role="img"
-                  aria-label={`${t(UI.flagToId)}: ${target.name[lang]}`}
-                  id="ask"
+                  className={`flag ${question.mode === "country" ? "flag-xl" : "flag-md"}`}
+                  role={!revealed && question.mode === "country" ? "img" : undefined}
+                  aria-label={
+                    !revealed && question.mode === "country"
+                      ? `${t(UI.flagToId)}: ${target.name[lang]}`
+                      : undefined
+                  }
+                  aria-hidden={revealed || question.mode !== "country" ? "true" : undefined}
+                  id={!revealed && question.mode === "country" ? "ask" : undefined}
                 >
                   {flagEmoji(target.a2)}
                 </span>
-              </>
-            )}
+              ) : (
+                <span
+                  className={`skeleton skeleton--flag ${question.mode === "country" ? "flag-xl" : "flag-md"}`}
+                  aria-hidden="true"
+                />
+              )}
+
+              <span className="ident">
+                {revealed || question.mode !== "country" ? (
+                  <strong id={revealed || question.mode !== "country" ? "ask" : undefined}>
+                    {target.name[lang]}
+                  </strong>
+                ) : (
+                  <span className="skeleton skeleton--name" aria-hidden="true" />
+                )}
+
+                {revealed ? (
+                  place
+                ) : question.mode === "flag" ? (
+                  <span className="mono dim place">{t(UI.capitalIs, target.cap[lang])}</span>
+                ) : (
+                  <span className="skeleton skeleton--place" aria-hidden="true" />
+                )}
+              </span>
+            </span>
           </div>
 
           <div
@@ -904,28 +961,19 @@ export default function AtlasDrill() {
             })}
           </div>
 
-          {revealed && (
-            <div className="reveal">
-              <p
-                className={`note ${wasRight ? "note--win" : "note--miss"} pop`}
-                role="status"
-              >
-                <b>{timedOut ? t(UI.timeUp) : wasRight ? t(UI.correct) : t(UI.notQuite)}</b>{" "}
-                {wasRight ? "" : t(UI.answerWas, target.name[lang])}
+          {revealed &&
+            (wasRight ? (
+              // The ticked answer and the named country already say it;
+              // only a screen reader still needs telling.
+              <p className="sr-only" role="status">
+                {t(UI.correct)} {target.name[lang]}, {target.cap[lang]}
               </p>
-              <p className="reveal-body">
-                <span className="flag flag-sm" aria-hidden="true">
-                  {flagEmoji(target.a2)}
-                </span>
-                <strong>{target.name[lang]}</strong>
-                <span className="mono dim">
-                  {target.cap[lang]}
-                  {target.alt ? ` · ${t(UI.alsoKnown, target.alt[lang])}` : ""}
-                  {` · ${target.subName[lang]}`}
-                </span>
+            ) : (
+              <p className="note note--miss pop reveal" role="status">
+                <b>{timedOut ? t(UI.timeUp) : t(UI.notQuite)}</b>{" "}
+                {t(UI.answerWas, question.mode === "capital" ? target.cap[lang] : target.name[lang])}
               </p>
-            </div>
-          )}
+            ))}
 
           <div className="actions">
             {revealed && (

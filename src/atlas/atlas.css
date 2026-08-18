@@ -130,6 +130,99 @@
   color: var(--gold);
 }
 
+/* ---------- the reveal, arriving ---------- */
+
+/* The answer settles into the blanks the skeletons were holding. */
+.ident strong,
+.ask-flag .flag,
+.place {
+  animation: settle 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.place {
+  animation-delay: 0.06s;
+}
+
+@keyframes settle {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* The capital lands on the map: a dot, and one ring going out. */
+.capital-dot,
+.capital-name {
+  animation: settle 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 0.1s;
+}
+
+.capital-halo {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: land 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 0.1s;
+}
+
+@keyframes land {
+  from {
+    transform: scale(0.2);
+    opacity: 0.9;
+  }
+  60% {
+    transform: scale(1.9);
+    opacity: 0.35;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* The chosen answer acknowledges the tap. */
+.opt.right {
+  animation: chosen 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes chosen {
+  from {
+    transform: scale(0.97);
+  }
+  55% {
+    transform: scale(1.02);
+  }
+  to {
+    transform: none;
+  }
+}
+
+/* The capital, marked where it actually stands once the answer is out. */
+.capital-halo {
+  fill: rgba(121, 227, 192, 0.22);
+  stroke: var(--foam);
+  stroke-width: 1;
+}
+
+.capital-dot {
+  fill: var(--foam);
+  stroke: var(--abyss);
+  stroke-width: 1;
+}
+
+.capital-name {
+  fill: var(--paper);
+  font-family: var(--util);
+  font-size: 13px;
+  paint-order: stroke;
+  stroke: rgba(6, 22, 38, 0.85);
+  stroke-width: 3.5;
+  stroke-linejoin: round;
+}
+
 /* ---------- question ---------- */
 
 .ask {
@@ -224,34 +317,67 @@
 
 /* ---------- reveal ---------- */
 
-.reveal {
+/* The flag keeps its size; the country steps in beside it. */
+.ask-flag {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s3);
+  min-width: 0;
+}
+
+.ident {
   display: flex;
   flex-direction: column;
-  gap: var(--s2);
-  border-top: 1px solid var(--gold-soft);
-  padding-top: var(--s2);
+  align-items: flex-start;
+  gap: 3px;
+  text-align: left;
+  min-width: 0;
 }
 
-.reveal .note {
-  margin: 0;
+/* Placeholders for the part of the answer still to come. They hold the
+   exact room the real thing will take. */
+.skeleton {
+  display: block;
+  border-radius: 6px;
+  background: rgba(255, 244, 222, 0.13);
 }
 
-.reveal-body {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 2px 8px;
-  margin: 0;
+.skeleton--flag {
+  width: 1.32em;
+  height: 0.95em;
+  border-radius: 4px;
+  flex: none;
 }
 
-.reveal-body .flag {
-  align-self: center;
-}
-
-.reveal-body strong {
+.skeleton--name {
+  width: 6.5em;
+  height: 1.1em;
   font-family: var(--display);
-  font-variation-settings: "opsz" 60;
-  font-size: 18px;
+  font-size: clamp(22px, 5.5vw, 30px);
+}
+
+.skeleton--place {
+  width: 11em;
+  height: 1.25em;
+  font-size: 12px;
+}
+
+.ident strong {
+  font-family: var(--display);
+  font-variation-settings: "opsz" 90;
+  font-weight: 900;
+  font-size: clamp(22px, 5.5vw, 30px);
+  line-height: 1.1;
+}
+
+.place {
+  font-size: 12px;
+  line-height: 1.25;
+}
+
+.reveal {
+  margin: 0;
 }
 
 /* ---------- summary, progress, board ---------- */

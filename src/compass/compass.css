@@ -308,3 +308,84 @@
     letter-spacing: 0.08em;
   }
 }
+
+/* ---------- the pancake (stop 11) ---------- */
+
+.pan {
+  position: relative;
+  width: min(100%, 300px, 17vh);
+  aspect-ratio: 1;
+  margin: 0 auto;
+}
+
+/* Inset by one handle radius, so a handle on the rim stays in the box. */
+.pan-seats {
+  position: absolute;
+  inset: 20px;
+}
+
+.pan-seats svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.pan-body {
+  fill: rgba(242, 180, 65, 0.12);
+  stroke: var(--gold);
+  stroke-width: 2.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.cut {
+  stroke: var(--foam);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+
+/* A small dot to aim at, inside a finger-sized hit area. */
+.handle {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  touch-action: none;
+}
+
+/* Six handles ring a small pancake: a smaller dot keeps them apart, while
+   the 40px button around it stays finger-sized. */
+.handle span {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--gold);
+  border: 2px solid var(--abyss);
+  box-shadow: 0 0 0 2px var(--gold);
+  transition: background 0.12s ease, box-shadow 0.12s ease, transform 0.12s ease;
+}
+
+.handle.held span,
+.handle:focus-visible span {
+  background: var(--foam);
+  box-shadow: 0 0 0 3px var(--foam);
+  transform: scale(1.15);
+}
+
+.handle:focus-visible {
+  outline: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .handle:hover span {
+    box-shadow: 0 0 0 3px var(--gold);
+  }
+}

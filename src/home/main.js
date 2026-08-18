@@ -24,8 +24,8 @@ const UI = {
     es: "Quince paradas y quince guardianes: contar, series, balanzas y las dos trampas clásicas.",
   },
   atlasBlurb: {
-    en: "195 countries. Flags, capitals and outlines, asked again wherever you keep slipping.",
-    es: "195 países. Banderas, capitales y siluetas, repetidas donde más se te resisten.",
+    en: "194 countries. Flags, capitals and outlines, asked again wherever you keep slipping.",
+    es: "194 países. Banderas, capitales y siluetas, repetidas donde más se te resisten.",
   },
   compassAges: { en: "Ages 6–10 · 15 puzzles", es: "6–10 años · 15 enigmas" },
   atlasAges: { en: "Ages 8+ · 12 per round", es: "8+ años · 12 por ronda" },

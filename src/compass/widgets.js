@@ -2,18 +2,30 @@
 
 import { coinTray, wireCoinTray } from "./coins.js";
 import { ringWidget, wireRingWidget, createRingState } from "./handshakes.js";
+import { pancakeWidget, wirePancakeWidget, createPancakeState } from "./pancake.js";
 
-export const createWidgetState = (widget) => {
-  if (!widget) return null;
-  return widget.kind === "coins" ? new Set() : createRingState();
+const KINDS = {
+  coins: {
+    state: () => new Set(),
+    render: coinTray,
+    wire: wireCoinTray,
+  },
+  ring: {
+    state: createRingState,
+    render: ringWidget,
+    wire: wireRingWidget,
+  },
+  pancake: {
+    state: createPancakeState,
+    render: pancakeWidget,
+    wire: wirePancakeWidget,
+  },
 };
 
+export const createWidgetState = (widget) => (widget ? KINDS[widget.kind].state() : null);
+
 export const renderWidget = (widget, state, answered = false) =>
-  widget.kind === "coins"
-    ? coinTray(widget, state, answered)
-    : ringWidget(widget, state, answered);
+  KINDS[widget.kind].render(widget, state, answered);
 
 export const wireWidget = (root, widget, state, repaint) =>
-  widget.kind === "coins"
-    ? wireCoinTray(root, widget, state, repaint)
-    : wireRingWidget(root, widget, state, repaint);
+  KINDS[widget.kind].wire(root, widget, state, repaint);

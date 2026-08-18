@@ -39,10 +39,24 @@ const UI = {
     en: "Ember lowers her head and the Golden Compass spins once, then points home. Fifteen stops, fifteen puzzles, one navigator.",
     es: "Ember baja la cabeza y la Brújula Dorada gira una vez y señala hacia casa. Quince paradas, quince enigmas, un solo navegante.",
   },
-  score: {
-    en: (n) => `Solved with no hint and no wrong turn: ${n} of 15.`,
-    es: (n) => `Resueltas sin pista y sin fallo: ${n} de 15.`,
+  allSolved: {
+    en: "Fifteen stops, all of them solved.",
+    es: "Quince paradas, todas resueltas.",
   },
+  score: {
+    en: (n) => `Answered first time, with no hint: ${n} of 15.`,
+    es: (n) => `Acertadas a la primera y sin pista: ${n} de 15.`,
+  },
+  blots: {
+    en: (list) => `A hand was needed at ${list}.`,
+    es: (list) => `Hizo falta ayuda en ${list}.`,
+  },
+  blotHint: { en: (n) => `stop ${n} (hint)`, es: (n) => `la parada ${n} (pista)` },
+  blotRetry: {
+    en: (n) => `stop ${n} (second try)`,
+    es: (n) => `la parada ${n} (segundo intento)`,
+  },
+  andWord: { en: "and", es: "y" },
   best: { en: (n) => `Best so far: ${n} of 15.`, es: (n) => `Mejor marca: ${n} de 15.` },
   again: { en: "Sail it again", es: "Navegar otra vez" },
   grownup: { en: "Notes for a grown-up", es: "Notas para un adulto" },
@@ -71,7 +85,8 @@ const saved = load("compass:save", null);
 let view = "title";
 let stop = 0;
 let solved = 0;
-let clean = 0; // solved with no hint and no wrong answer
+let clean = 0; // answered first time, with no hint
+let blots = []; // the stops that needed a hint or another try
 let order = [];
 let hintShown = false;
 let wrongPicks = new Set();
@@ -99,7 +114,7 @@ function enterStop(index) {
   wrongPicks = new Set();
   widgetState = createWidgetState(STOPS[index].widget);
   order = shuffled(STOPS[index].options);
-  save("compass:save", { stop, solved, clean });
+  save("compass:save", { stop, solved, clean, blots });
 }
 
 /* ---------- screens ---------- */
@@ -128,10 +143,12 @@ function titleScreen() {
     if (canResume) {
       solved = saved.solved ?? 0;
       clean = saved.clean ?? 0;
+      blots = saved.blots ?? [];
       enterStop(saved.stop);
     } else {
       solved = 0;
       clean = 0;
+      blots = [];
       enterStop(0);
     }
     view = "play";
@@ -142,6 +159,7 @@ function titleScreen() {
     haptic.tap();
     solved = 0;
     clean = 0;
+    blots = [];
     enterStop(0);
     view = "play";
     paint({ focus: true });
@@ -215,7 +233,7 @@ function mountActions() {
       haptic.tap();
       if (last) {
         view = "end";
-        save("compass:save", { stop: 0, solved: 0, clean: 0 });
+        save("compass:save", { stop: 0, solved: 0, clean: 0, blots: [] });
         if (clean > load("compass:best", 0)) save("compass:best", clean);
         haptic.fanfare();
       } else {
@@ -252,6 +270,15 @@ function showHint() {
     `<p class="note pop"><b>${t(UI.hintLab)}</b> ${t(STOPS[stop].hint)}</p>`;
 }
 
+/** "stop 3 (hint) and stop 7 (second try)" */
+function blotList() {
+  const parts = blots.map((blot) =>
+    t(blot.why === "hint" ? UI.blotHint : UI.blotRetry, blot.stop),
+  );
+  if (parts.length < 2) return parts.join("");
+  return `${parts.slice(0, -1).join(", ")} ${t(UI.andWord)} ${parts.at(-1)}`;
+}
+
 function endScreen() {
   setProgress({ label: t(UI.voyage), value: STOPS.length, max: STOPS.length });
   const best = load("compass:best", 0);
@@ -263,7 +290,10 @@ function endScreen() {
         <div class="pieces" role="img" aria-label="${t(UI.pieces)}">
           ${[...Array(5)].map(() => `<span class="piece got"></span>`).join("")}
         </div>
-        <p class="story score"><b>${t(UI.score, clean)}</b></p>
+        <p class="story score">
+          <b>${t(UI.allSolved)}</b><br>${t(UI.score, clean)}
+        </p>
+        ${blots.length ? `<p class="mono dim">${t(UI.blots, blotList())}</p>` : ""}
         <p class="mono dim">${t(UI.best, best)}</p>
         <div class="row"><button class="btn" id="again" type="button">${t(UI.again)}</button></div>
       </div>
@@ -279,6 +309,7 @@ function endScreen() {
     haptic.tap();
     solved = 0;
     clean = 0;
+    blots = [];
     enterStop(0);
     view = "play";
     paint({ focus: true });
@@ -306,8 +337,9 @@ function settle(button, silent = false) {
   if (!silent) {
     solved += 1;
     if (!hintShown && wrongPicks.size === 0) clean += 1;
+    else blots.push({ stop: stop + 1, why: wrongPicks.size ? "retry" : "hint" });
     answered = true;
-    save("compass:save", { stop, solved, clean });
+    save("compass:save", { stop, solved, clean, blots });
     haptic.win();
     setProgress({ label: t(UI.stopOf, stop + 1), value: stop + 1, max: STOPS.length });
   }

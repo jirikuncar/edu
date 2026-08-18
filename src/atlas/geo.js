@@ -33,7 +33,13 @@ export function decodeTopology(topo) {
       geometry.type === "Polygon"
         ? [geometry.arcs.map(stitch)]
         : geometry.arcs.map((polygon) => polygon.map(stitch));
-    shapes.set(String(geometry.id), rings);
+
+    // A country can appear as several geometries under one id (Australia
+    // is the mainland plus Ashmore Reef). Collect them all: keeping only
+    // the last drew Australia as a reef.
+    const found = shapes.get(String(geometry.id));
+    if (found) found.push(...rings);
+    else shapes.set(String(geometry.id), rings);
   }
   return shapes;
 }

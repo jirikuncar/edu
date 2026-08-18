@@ -143,21 +143,77 @@ describe("the golden compass", { concurrency: true }, () => {
       "each handshake needs its own colour",
     );
 
-    const fits = await page.evaluate(() => {
+    const layout = await page.evaluate(() => {
       const ring = document.querySelector(".ring").getBoundingClientRect();
-      return [...document.querySelectorAll(".person")].every((person) => {
-        const box = person.getBoundingClientRect();
-        return (
+      const people = [...document.querySelectorAll(".person")].map((person) =>
+        person.getBoundingClientRect(),
+      );
+      const inside = people.every(
+        (box) =>
           box.left >= ring.left - 1 &&
           box.right <= ring.right + 1 &&
           box.top >= ring.top - 1 &&
-          box.bottom <= ring.bottom + 1
-        );
-      });
+          box.bottom <= ring.bottom + 1,
+      );
+      let closest = Infinity;
+      for (let i = 0; i < people.length; i++)
+        for (let j = i + 1; j < people.length; j++) {
+          const a = people[i];
+          const b = people[j];
+          const gap = Math.hypot(
+            a.left + a.width / 2 - (b.left + b.width / 2),
+            a.top + a.height / 2 - (b.top + b.height / 2),
+          ) - a.width;
+          closest = Math.min(closest, gap);
+        }
+      return { inside, closest: Math.round(closest) };
     });
-    assert.ok(fits, "every apprentice must sit inside the ring box");
+    assert.ok(layout.inside, "every apprentice must sit inside the ring box");
+    assert.ok(
+      layout.closest >= 8,
+      `apprentices are ${layout.closest}px apart — they need room to stand`,
+    );
 
     await axeCheck(page, "handshake ring");
+    await context.close();
+  });
+
+  test("the pancake recounts its pieces as the cuts move", async () => {
+    const { context, page } = await site.newPage();
+    await openStopAt(page, site.compass, 10);
+    await page.waitForSelector(".pan");
+
+    const pieces = () => page.locator(".ring-count b").innerText();
+    assert.match(await pieces(), /Pieces: 6/, "three cuts through the middle make six");
+    assert.equal(await page.locator(".handle").count(), 6, "two handles per cut");
+
+    // Drag one end away from the middle; the cuts stop being concurrent.
+    const seats = await page.locator(".pan-seats").boundingBox();
+    const handle = await page.locator('.handle[data-cut="1"][data-end="0"]').boundingBox();
+    await page.mouse.move(handle.x + handle.width / 2, handle.y + handle.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(seats.x + seats.width, seats.y + seats.height / 2, { steps: 10 });
+    await page.mouse.up();
+    assert.match(await pieces(), /Pieces: 7/, "spread cuts make seven");
+    assert.match(await page.locator(".pan-best").innerText(), /Best so far: 7/);
+
+    // Arrow keys move a handle too, for anyone not dragging.
+    const before = await page.evaluate(() =>
+      document.querySelector('.handle[data-cut="0"][data-end="0"]').style.left,
+    );
+    await page.locator('.handle[data-cut="0"][data-end="0"]').focus();
+    await page.keyboard.press("ArrowRight");
+    const after = await page.evaluate(() =>
+      document.querySelector('.handle[data-cut="0"][data-end="0"]').style.left,
+    );
+    assert.notEqual(before, after, "an arrow key should move the handle");
+
+    // Reset puts the cuts back, and keeps the record.
+    await page.locator(".pan-reset").click();
+    assert.match(await pieces(), /Pieces: 6/);
+    assert.match(await page.locator(".pan-best").innerText(), /Best so far: 7/);
+
+    await axeCheck(page, "pancake");
     await context.close();
   });
 

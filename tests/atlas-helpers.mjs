@@ -49,10 +49,10 @@ export const answerCorrectly = async (page, lang = "en") => {
 export const playRound = async (page, count, lang = "en") => {
   for (let asked = 1; asked <= count; asked++) {
     await answerCorrectly(page, lang);
-    await page.waitForSelector(".reveal");
+    await page.waitForSelector(".actions .btn");
     assert.equal(
-      await page.locator(".note--win").count(),
-      1,
+      await page.locator(".opt.wrong").count(),
+      0,
       `question ${asked} should have been answered correctly`,
     );
     if (asked < count) await page.locator(".actions .btn").click();

@@ -92,7 +92,7 @@ describe("fits on a phone screen", { concurrency: true }, () => {
         });
 
         await answerCorrectly(page, lang);
-        await page.waitForSelector(".reveal");
+        await page.waitForSelector(".actions .btn");
         assert.equal(await overflow(page), 0, `[${lang}] atlas ${mode} answered scrolls`);
         await page.locator(".actions .btn").click();
       }
@@ -100,6 +100,38 @@ describe("fits on a phone screen", { concurrency: true }, () => {
       await context.close();
     });
   }
+
+  test("answering does not move the answers", async () => {
+    // The question holds a skeleton for whatever it is hiding, so the
+    // reveal fills the blanks in rather than pushing the page around.
+    const { context, page } = await site.newPage(phone);
+    await page.goto(site.atlas);
+    await page.getByRole("button", { name: "Start round" }).waitFor({ timeout: 20_000 });
+    await page.getByRole("button", { name: "Start round" }).click();
+
+    const seen = new Set();
+    const top = () =>
+      page.evaluate(() => Math.round(document.querySelector(".opts").getBoundingClientRect().top));
+
+    for (let question = 0; question < 6 && seen.size < 3; question++) {
+      await page.waitForSelector(".opt:not([disabled])");
+      const mode = await page.evaluate(() =>
+        document.querySelector(".opts").classList.contains("opts--flags")
+          ? "flag"
+          : document.getElementById("ask")?.getAttribute("aria-label")
+            ? "country"
+            : "capital",
+      );
+      seen.add(mode);
+      const before = await top();
+      await answerCorrectly(page, "en");
+      await page.waitForSelector(".actions .btn");
+      assert.equal(await top(), before, `answering a ${mode} question moved the answers`);
+      await page.locator(".actions .btn").click();
+    }
+    assert.equal(seen.size, 3, "all three question types should have been checked");
+    await context.close();
+  });
 
   test("both games are reachable without scrolling the hub", async () => {
     const { context, page } = await site.newPage(phone);

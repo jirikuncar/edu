@@ -52,7 +52,7 @@ describe("atlas drill", { concurrency: true }, () => {
     await page.waitForSelector(".opt");
 
     await page.locator(".opt").first().click();
-    await page.waitForSelector(".reveal");
+    await page.waitForSelector(".actions .btn");
     assert.equal(await page.locator("#shell-count").innerText(), "1/12");
     assert.equal(await page.locator(".log li").count(), 0);
     await context.close();
