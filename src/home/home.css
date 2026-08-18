@@ -26,11 +26,32 @@ a.tile {
   flex: 1;
   display: flex;
   flex-direction: column;
+  gap: var(--s2);
+}
+
+/* Mark and title share a line: the art earns its place without costing a
+   band of vertical space. */
+.tile-head {
+  display: flex;
+  align-items: center;
   gap: var(--s3);
+}
+
+.tile-head > span {
+  min-width: 0;
 }
 
 .tile-body {
   flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s1);
+}
+
+.tile-blurb,
+.tile-progress,
+.tile-ages {
+  display: block;
 }
 
 .tile-go {
@@ -38,23 +59,23 @@ a.tile {
 }
 
 .tile-art {
-  width: 56px;
-  height: 56px;
+  width: 46px;
+  height: 46px;
   flex: none;
 }
 
 .tile h2 {
   color: var(--gold);
-  font-size: 26px;
-  margin-bottom: 2px;
+  font-size: 24px;
+  margin: 0;
 }
 
 .tile-ages {
-  margin: 0 0 8px;
+  margin: 0;
 }
 
 .tile-blurb {
-  margin: 0 0 10px;
+  margin: 0;
   color: rgba(255, 244, 222, 0.92);
   font-size: 16px;
 }
@@ -124,5 +145,20 @@ a.tile {
 @media (max-width: 660px) {
   .tile h2 {
     font-size: 23px;
+  }
+}
+
+@media (max-height: 780px) {
+  .tile-go {
+    padding: 11px 26px;
+  }
+
+  .tile h2 {
+    font-size: 22px;
+  }
+
+  .tile-art {
+    width: 42px;
+    height: 42px;
   }
 }

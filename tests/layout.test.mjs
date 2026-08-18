@@ -55,7 +55,17 @@ describe("layout", { concurrency: true }, () => {
         await page.waitForSelector("main");
         const overflow = await page.evaluate(() => {
           const doc = document.documentElement;
+          // Content inside a sideways scroller (the settings chip rows) is
+          // allowed past the edge; the scroller itself is not.
+          const inScroller = (el) => {
+            for (let node = el.parentElement; node; node = node.parentElement) {
+              const overflowX = getComputedStyle(node).overflowX;
+              if (overflowX === "auto" || overflowX === "scroll") return true;
+            }
+            return false;
+          };
           const widest = [...document.querySelectorAll("body *")]
+            .filter((el) => !inScroller(el))
             .map((el) => el.getBoundingClientRect().right)
             .reduce((a, b) => Math.max(a, b), 0);
           return { scroll: doc.scrollWidth - doc.clientWidth, past: Math.round(widest - doc.clientWidth) };

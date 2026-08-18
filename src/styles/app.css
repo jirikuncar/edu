@@ -624,6 +624,24 @@ a.card:hover {
   font-weight: 700;
 }
 
+/* Small inline control that shares a row with text (reset, clear). */
+.chip {
+  flex: none;
+  background: none;
+  border: 1px solid rgba(242, 180, 65, 0.4);
+  color: var(--gold);
+  border-radius: 999px;
+  padding: 0 14px;
+  min-height: 40px;
+  font-family: var(--util);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+}
+
+.chip:hover {
+  background: var(--gold-faint);
+}
+
 /* Toggle switch — a real button with role="switch", so the state is
    exposed to assistive tech rather than implied by the artwork. */
 .switch {
@@ -702,6 +720,42 @@ a.card:hover {
 
 .input::placeholder {
   color: rgba(255, 244, 222, 0.35);
+}
+
+/* Bottom action bar: the one button a child needs next, always within
+   thumb reach and never scrolled off. Sticks while its container is
+   taller than the screen, and sits inline once everything fits. */
+.actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  display: flex;
+  gap: var(--s2);
+  align-items: center;
+  /* Horizontal bleed only. A negative *bottom* margin here makes the
+     sticky bar fight the page height: it unsticks, the page grows, it
+     sticks again — a 2px flicker whenever content lands near the fold. */
+  margin-inline: calc(-1 * max(var(--pad), var(--safe-l)));
+  padding: var(--s2) max(var(--pad), var(--safe-l))
+    calc(var(--s2) + var(--safe-b));
+  background: rgba(6, 22, 38, 0.78);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(242, 180, 65, 0.18);
+}
+
+.actions:empty {
+  display: none;
+}
+
+/* The bar carries its own bottom padding (and the safe area with it). */
+.wrap:has(.actions) {
+  padding-bottom: 0;
+}
+
+.actions > .btn {
+  flex: 1;
+  width: auto;
 }
 
 /* ---------- feedback ---------- */
@@ -826,7 +880,8 @@ a.card:hover {
   }
 
   .opts {
-    grid-template-columns: repeat(auto-fit, minmax(84px, 1fr));
+    /* four short numbers still make one row on a 390px phone */
+    grid-template-columns: repeat(auto-fit, minmax(68px, 1fr));
     gap: var(--s2);
   }
 
@@ -843,5 +898,47 @@ a.card:hover {
 @media (max-width: 420px) {
   .shell-brand span {
     display: none;
+  }
+}
+
+/* Not much room below the fold: spend it on the question, not on padding. */
+@media (max-height: 780px) {
+  :root {
+    --gap: var(--s2);
+    --bar-h: 48px;
+  }
+
+  h1 {
+    font-size: clamp(28px, 7vw, 48px);
+  }
+
+  .card {
+    padding: var(--s3);
+  }
+
+  .card--flow {
+    gap: var(--s2);
+  }
+
+  .wrap {
+    padding-top: var(--s2);
+  }
+
+  .story {
+    margin: 0;
+  }
+
+  .note {
+    font-size: 15px;
+    line-height: 1.45;
+  }
+
+  .prompt {
+    margin-bottom: 0;
+  }
+
+  .opt {
+    min-height: 52px;
+    padding: 12px 10px;
   }
 }

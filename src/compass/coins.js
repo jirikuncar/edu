@@ -25,13 +25,14 @@ const UI = {
     es: "Eso pasa del peaje, y Grum no da cambio.",
   },
   reset: { en: "Empty the basket", es: "Vaciar la cesta" },
+  resetShort: { en: "Empty", es: "Vaciar" },
   coinIn: { en: (v) => `${v} copper, in the basket`, es: (v) => `${v} cobres, en la cesta` },
   coinOut: { en: (v) => `${v} copper, in the purse`, es: (v) => `${v} cobres, en la bolsa` },
 };
 
 /** Renders the tray. `basket` is a live Set of coin indexes, kept by the caller
  *  so the state survives a re-render (a language switch, say). */
-export function coinTray({ coins, target }, basket) {
+export function coinTray({ coins, target }, basket, answered = false) {
   const sum = [...basket].reduce((total, index) => total + coins[index], 0);
   const count = basket.size;
 
@@ -42,9 +43,18 @@ export function coinTray({ coins, target }, basket) {
         ? `<span class="tray-over">${t(UI.over)}</span>`
         : "";
 
+  // Once the answer is in, the coins have done their job: leave the tally
+  // behind and give the room back to the explanation.
+  if (answered)
+    return `
+    <p class="tray-sum tray-sum--done">
+      <b>${t(UI.basket, sum, target, count)}</b>
+      ${sum === target ? `<span class="tray-good">${t(UI.exact, count)}</span>` : ""}
+    </p>`;
+
   return `
     <div class="tray">
-      <p class="label" id="tray-label">${t(UI.purse)}</p>
+      <p class="sr-only" id="tray-label">${t(UI.purse)}</p>
       <div class="coins" role="group" aria-labelledby="tray-label">
         ${coins
           .map(
@@ -57,16 +67,18 @@ export function coinTray({ coins, target }, basket) {
           )
           .join("")}
       </div>
-      <p class="tray-sum" role="status">
-        <b>${t(UI.basket, sum, target, count)}</b>
-        ${status ? `<span class="tray-verdict">${status}</span>` : ""}
-      </p>
-      <p class="tray-help mono dim">${t(UI.tap)}</p>
-      ${
-        count
-          ? `<button type="button" class="btn btn--ghost tray-reset">${t(UI.reset)}</button>`
-          : ""
-      }
+      <div class="tray-foot">
+        <p class="tray-sum" role="status">
+          <b>${t(UI.basket, sum, target, count)}</b>
+          ${status ? `<span class="tray-verdict">${status}</span>` : ""}
+        </p>
+        ${
+          count
+            ? `<button type="button" class="chip tray-reset" aria-label="${t(UI.reset)}">${t(UI.resetShort)}</button>`
+            : ""
+        }
+      </div>
+      ${count ? "" : `<p class="tray-help mono dim">${t(UI.tap)}</p>`}
     </div>`;
 }
 

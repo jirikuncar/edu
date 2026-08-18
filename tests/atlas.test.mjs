@@ -24,7 +24,7 @@ describe("atlas drill", { concurrency: true }, () => {
 
     await playRound(page, 12);
     assert.equal(await page.locator("#shell-count").innerText(), "12/12");
-    await page.locator(".reveal .btn").click();
+    await page.locator(".actions .btn").click();
 
     await page.waitForSelector(".final-score");
     assert.equal(await page.locator(".log li").count(), 12);

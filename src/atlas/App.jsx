@@ -223,6 +223,23 @@ const buildQuestion = (pool, stats, mode, recent, lang) => {
   return { target, mode, options: shuffle([target, ...picks]) };
 };
 
+/** True when the viewport is short enough that a full-height chart would
+ *  push the answers off screen. */
+const useShortScreen = () => {
+  const query = "(max-height: 780px)";
+  const [short, setShort] = useState(
+    () => typeof matchMedia === "function" && matchMedia(query).matches,
+  );
+  useEffect(() => {
+    const media = matchMedia(query);
+    const update = (event) => setShort(event.matches);
+    media.addEventListener("change", update);
+    setShort(media.matches);
+    return () => media.removeEventListener("change", update);
+  }, []);
+  return short;
+};
+
 /* ---------- chart ---------- */
 
 function ChartCard({ feature, world, country, revealed, mode, lang, width = 520, height = 320 }) {
@@ -652,6 +669,7 @@ export default function AtlasDrill() {
       : []),
   ];
 
+  const shortScreen = useShortScreen();
   const revealed = !!picked;
   const feature = question ? featureFor(question.target) : null;
   const target = question?.target;
@@ -689,7 +707,7 @@ export default function AtlasDrill() {
             <h1 ref={heading} tabIndex={-1} className="atlas-title">
               {t(UI.title)}
             </h1>
-            <p className="story">
+            <p className="story atlas-lead">
               {t(UI.sub, COUNTRIES.length)}{" "}
               {home && (
                 <span className="hint">
@@ -767,7 +785,7 @@ export default function AtlasDrill() {
               {t(UI.loadFail)}
             </p>
           ) : (
-            <p aria-live="polite">
+            <div className="actions" aria-live="polite">
               <button
                 className="btn"
                 type="button"
@@ -776,7 +794,7 @@ export default function AtlasDrill() {
               >
                 {loadState === "ready" ? t(UI.start) : t(UI.loading)}
               </button>
-            </p>
+            </div>
           )}
         </div>
       )}
@@ -808,6 +826,7 @@ export default function AtlasDrill() {
             revealed={revealed}
             mode={question.mode}
             lang={lang}
+            height={shortScreen ? (revealed ? 150 : 190) : 320}
           />
 
           {!feature && <p className="note">{t(UI.noOutline)}</p>}
@@ -845,7 +864,7 @@ export default function AtlasDrill() {
           </div>
 
           <div
-            className={`opts${question.mode === "flag" ? " opts--flags" : ""}`}
+            className={`opts opts--answers${question.mode === "flag" ? " opts--flags" : ""}`}
             role="group"
             aria-labelledby="ask"
           >
@@ -894,24 +913,27 @@ export default function AtlasDrill() {
                 <b>{timedOut ? t(UI.timeUp) : wasRight ? t(UI.correct) : t(UI.notQuite)}</b>{" "}
                 {wasRight ? "" : t(UI.answerWas, target.name[lang])}
               </p>
-              <div className="reveal-body">
-                <span className="flag flag-md" aria-hidden="true">
+              <p className="reveal-body">
+                <span className="flag flag-sm" aria-hidden="true">
                   {flagEmoji(target.a2)}
                 </span>
-                <span>
-                  <strong>{target.name[lang]}</strong>
-                  <span className="mono dim">
-                    {target.cap[lang]}
-                    {target.alt ? ` · ${t(UI.alsoKnown, target.alt[lang])}` : ""}
-                  </span>
-                  <span className="mono dim">{target.subName[lang]}</span>
+                <strong>{target.name[lang]}</strong>
+                <span className="mono dim">
+                  {target.cap[lang]}
+                  {target.alt ? ` · ${t(UI.alsoKnown, target.alt[lang])}` : ""}
+                  {` · ${target.subName[lang]}`}
                 </span>
-              </div>
+              </p>
+            </div>
+          )}
+
+          <div className="actions">
+            {revealed && (
               <button className="btn" type="button" onClick={advance} ref={nextButton}>
                 {round.asked >= ROUND_LENGTH ? t(UI.seeResults) : t(UI.next)}
               </button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       )}
 
@@ -942,7 +964,7 @@ export default function AtlasDrill() {
               );
             })}
           </ul>
-          <div className="row row--split">
+          <div className="actions">
             <button className="btn" type="button" onClick={startRound}>
               {t(UI.playAgain)}
             </button>

@@ -159,13 +159,17 @@ function playScreen() {
 
   main.innerHTML = `
     <div class="fade stack">
-      <div class="card card--flow">
-        <h1 class="eyebrow h-plain" id="head" tabindex="-1">${t(UI.stopOf, stop + 1)} &nbsp;·&nbsp; ${t(land.name)}</h1>
-        <p class="speaker">${t(land.guide)} ${t(UI.says)}</p>
+      <div class="card card--flow${answered ? " card--answered" : ""}">
+        <h1 class="stop-line h-plain" id="head" tabindex="-1">
+          <span class="sr-only">${t(UI.stopOf, stop + 1)} — </span>
+          <span>${t(land.name)}</span>
+          <span aria-hidden="true">·</span>
+          <span class="speaker">${t(land.guide)} ${t(UI.says)}</span>
+        </h1>
         <p class="story">${t(s.story)}</p>
         ${s.art ?? ""}
         ${s.alt ? `<p class="sr-only">${t(UI.picture)} ${t(s.alt)}</p>` : ""}
-        <div id="widget">${s.widget ? renderWidget(s.widget, widgetState) : ""}</div>
+        <div id="widget">${s.widget ? renderWidget(s.widget, widgetState, answered) : ""}</div>
         <p class="prompt" id="prompt">${t(s.prompt)}</p>
         <div class="opts" role="group" aria-labelledby="prompt">
           ${order
@@ -176,31 +180,20 @@ function playScreen() {
             )
             .join("")}
         </div>
-        <div class="row">
-          <button class="btn btn--ghost" id="hint" type="button">${t(UI.hintBtn)}</button>
-        </div>
         <div id="hint-slot"></div>
         <div id="feedback"></div>
       </div>
+      <div class="actions" id="actions"></div>
     </div>`;
 
   if (s.widget) mountWidget(s.widget);
-
-  document.getElementById("hint").addEventListener("click", (event) => {
-    haptic.tap();
-    hintShown = true;
-    event.currentTarget.closest(".row").remove();
-    showHint();
-  });
+  mountActions();
 
   for (const button of main.querySelectorAll(".opt"))
     button.addEventListener("click", () => choose(button));
 
   // Restore the state of a stop that is being re-rendered (language switch).
-  if (hintShown) {
-    document.getElementById("hint").closest(".row").remove();
-    showHint();
-  }
+  if (hintShown) showHint();
   for (const button of main.querySelectorAll(".opt"))
     if (wrongPicks.has(Number(button.dataset.value))) markWrong(button);
   if (answered) {
@@ -209,11 +202,49 @@ function playScreen() {
   }
 }
 
+/* The bar at the bottom holds exactly one next step: ask for a hint while
+   the puzzle is open, sail on once it is solved. */
+function mountActions() {
+  const bar = document.getElementById("actions");
+  if (!bar) return;
+  const last = stop === STOPS.length - 1;
+
+  if (answered) {
+    bar.innerHTML = `<button class="btn" id="next" type="button">${last ? t(UI.last) : t(UI.next)}</button>`;
+    document.getElementById("next").addEventListener("click", () => {
+      haptic.tap();
+      if (last) {
+        view = "end";
+        save("compass:save", { stop: 0, solved: 0, clean: 0 });
+        if (clean > load("compass:best", 0)) save("compass:best", clean);
+        haptic.fanfare();
+      } else {
+        enterStop(stop + 1);
+      }
+      paint({ focus: true });
+    });
+    return;
+  }
+
+  if (hintShown) {
+    bar.innerHTML = "";
+    return;
+  }
+
+  bar.innerHTML = `<button class="btn btn--ghost" id="hint" type="button">${t(UI.hintBtn)}</button>`;
+  document.getElementById("hint").addEventListener("click", () => {
+    haptic.tap();
+    hintShown = true;
+    showHint();
+    mountActions();
+  });
+}
+
 /** Redraw a prop in place, so the rest of the stop stays put. */
 function mountWidget(widget) {
   const root = document.getElementById("widget");
-  root.innerHTML = renderWidget(widget, widgetState);
-  wireWidget(root, widget, widgetState, () => mountWidget(widget));
+  root.innerHTML = renderWidget(widget, widgetState, answered);
+  if (!answered) wireWidget(root, widget, widgetState, () => mountWidget(widget));
 }
 
 function showHint() {
@@ -268,25 +299,9 @@ function settle(button, silent = false) {
   if (!button.querySelector(".sr-only"))
     button.insertAdjacentHTML("beforeend", `<span class="sr-only"> — ${t(UI.srCorrect)}</span>`);
   for (const other of main.querySelectorAll(".opt")) other.disabled = true;
-  document.getElementById("hint")?.closest(".row")?.remove();
 
-  const last = stop === STOPS.length - 1;
-  document.getElementById("feedback").innerHTML = `
-    <p class="note note--win pop" role="status"><b>${t(UI.correct)}</b> ${t(STOPS[stop].why)}</p>
-    <div class="row"><button class="btn" id="next" type="button">${last ? t(UI.last) : t(UI.next)}</button></div>`;
-
-  document.getElementById("next").addEventListener("click", () => {
-    haptic.tap();
-    if (last) {
-      view = "end";
-      save("compass:save", { stop: 0, solved: 0, clean: 0 });
-      if (clean > load("compass:best", 0)) save("compass:best", clean);
-      haptic.fanfare();
-    } else {
-      enterStop(stop + 1);
-    }
-    paint({ focus: true });
-  });
+  document.getElementById("feedback").innerHTML =
+    `<p class="note note--win pop" role="status"><b>${t(UI.correct)}</b> ${t(STOPS[stop].why)}</p>`;
 
   if (!silent) {
     solved += 1;
@@ -296,6 +311,10 @@ function settle(button, silent = false) {
     haptic.win();
     setProgress({ label: t(UI.stopOf, stop + 1), value: stop + 1, max: STOPS.length });
   }
+  answered = true;
+  main.querySelector(".card")?.classList.add("card--answered");
+  mountActions();
+  if (STOPS[stop].widget) mountWidget(STOPS[stop].widget);
 }
 
 function choose(button) {

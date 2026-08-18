@@ -8,8 +8,10 @@ export const createWidgetState = (widget) => {
   return widget.kind === "coins" ? new Set() : createRingState();
 };
 
-export const renderWidget = (widget, state) =>
-  widget.kind === "coins" ? coinTray(widget, state) : ringWidget(widget, state);
+export const renderWidget = (widget, state, answered = false) =>
+  widget.kind === "coins"
+    ? coinTray(widget, state, answered)
+    : ringWidget(widget, state, answered);
 
 export const wireWidget = (root, widget, state, repaint) =>
   widget.kind === "coins"

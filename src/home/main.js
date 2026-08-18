@@ -14,17 +14,18 @@ import { load, remove } from "../lib/store.js";
 
 const UI = {
   tagline: { en: "Two voyages, one little ship", es: "Dos viajes, un solo barco" },
+  // The offline promise is made again, in context, on the install card.
   lead: {
-    en: "Maths puzzles and the whole world map, built for children who are learning to think out loud. Everything works without a connection once the page has loaded.",
-    es: "Enigmas de matemáticas y el mapa del mundo entero, para niños que aprenden a pensar en voz alta. Todo funciona sin conexión una vez cargada la página.",
+    en: "Maths puzzles and the whole world map, for children who are learning to think out loud.",
+    es: "Enigmas de matemáticas y el mapa del mundo, para niños que aprenden a pensar en voz alta.",
   },
   compassBlurb: {
-    en: "Fifteen stops across the Amber Sea. Counting, patterns, balances, cuts and the two classic traps — one guardian and one puzzle at a time.",
-    es: "Quince paradas por el Mar de Ámbar. Contar, series, balanzas, cortes y las dos trampas clásicas: un guardián y un enigma cada vez.",
+    en: "Fifteen stops, fifteen guardians: counting, patterns, balances and the two classic traps.",
+    es: "Quince paradas y quince guardianes: contar, series, balanzas y las dos trampas clásicas.",
   },
   atlasBlurb: {
-    en: "195 countries. Flags, capitals and outlines, drilled with questions that come back to whatever you keep getting wrong.",
-    es: "195 países. Banderas, capitales y siluetas, con preguntas que vuelven a lo que se te resiste.",
+    en: "195 countries. Flags, capitals and outlines, asked again wherever you keep slipping.",
+    es: "195 países. Banderas, capitales y siluetas, repetidas donde más se te resisten.",
   },
   compassAges: { en: "Ages 6–10 · 15 puzzles", es: "6–10 años · 15 enigmas" },
   atlasAges: { en: "Ages 8+ · 12 per round", es: "8+ años · 12 por ronda" },
@@ -154,13 +155,17 @@ const atlasSummary = () => {
 const tile = (section, art, blurb, ages, progress) => `
   <li>
     <a class="card tile" href="${section.href}">
-      ${art}
-      <div class="tile-body">
-        <h2>${t(section.title)}</h2>
-        <p class="mono dim tile-ages">${ages}</p>
-        <p class="tile-blurb">${blurb}</p>
-        <p class="mono tile-progress">${progress}</p>
-      </div>
+      <span class="tile-head">
+        ${art}
+        <span>
+          <h2>${t(section.title)}</h2>
+          <span class="mono dim tile-ages">${ages}</span>
+        </span>
+      </span>
+      <span class="tile-body">
+        <span class="tile-blurb">${blurb}</span>
+        <span class="mono tile-progress">${progress}</span>
+      </span>
       <span class="tile-go" aria-hidden="true">${t(UI.open)}</span>
     </a>
   </li>`;

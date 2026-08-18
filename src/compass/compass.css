@@ -7,12 +7,32 @@
   z-index: 0;
 }
 
+/* One line: which island, and who is talking. The stop number already
+   rides the header track, so it is only spoken here. */
+.stop-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 8px;
+  color: var(--gold);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* The illustration gives way first when the screen is short: it supports
+   the question, it is not the question. Once answered it shrinks again,
+   staying available for reference while the explanation takes the room. */
+.card--answered .art {
+  max-height: min(9vh, 78px);
+}
+
 .art {
   display: block;
   width: 100%;
   max-width: 340px;
+  max-height: min(15vh, 130px);
   height: auto;
-  margin: 0 auto 18px;
+  margin: 0 auto;
 }
 
 .pieces {
@@ -69,11 +89,31 @@
 @media (max-width: 660px) {
   .art {
     max-width: 290px;
-    margin-bottom: 14px;
   }
 }
 
 /* ---------- the toll tray (stop 9) ---------- */
+
+/* A status line and its control share one row, rather than stacking. */
+.tray-foot {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+}
+
+.tray-foot > p {
+  flex: 1;
+  min-width: 0;
+}
+
+.tray-sum--done,
+.ring-count--done {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 8px;
+  margin: 0;
+  font-size: 15px;
+}
 
 .tray {
   display: flex;
@@ -89,6 +129,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--s2);
+  justify-content: center;
 }
 
 .coin {
@@ -152,12 +193,8 @@
 
 @media (max-width: 660px) {
   .coin {
-    width: 48px;
-    height: 48px;
-  }
-
-  .tray-reset {
-    width: auto;
+    width: 46px;
+    height: 46px;
   }
 }
 
@@ -173,21 +210,31 @@
   background: rgba(6, 22, 38, 0.4);
 }
 
-/* Fixed aspect box so the ring always fits the card, whatever the width. */
+/* Fixed aspect box so the ring always fits the card — and on a short
+   screen it gives up height first, since the layout carries the meaning,
+   not the size. */
 .ring {
   position: relative;
-  width: 100%;
-  max-width: 340px;
-  aspect-ratio: 5 / 4;
+  width: min(100%, 340px, 24vh * 3 / 2);
+  aspect-ratio: 3 / 2;
+  max-height: 24vh;
   margin: 0 auto;
   align-self: center;
 }
 
-.ring svg {
+/* Seats sit on this inset box, so an apprentice's circle can never hang
+   over the edge however short the ring gets. */
+.ring-seats {
+  position: absolute;
+  inset: 23px;
+}
+
+.ring-seats svg {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
+  overflow: visible;
 }
 
 .person {
@@ -239,5 +286,21 @@
   .person {
     width: 44px;
     height: 44px;
+  }
+}
+
+@media (max-height: 780px) {
+  .tray,
+  .ring-widget {
+    padding: var(--s2);
+    gap: var(--s1);
+  }
+}
+
+@media (max-width: 420px) {
+  /* island and guide on one line, even on the narrowest phone */
+  .stop-line {
+    font-size: 11px;
+    letter-spacing: 0.08em;
   }
 }

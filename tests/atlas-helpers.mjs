@@ -55,6 +55,6 @@ export const playRound = async (page, count, lang = "en") => {
       1,
       `question ${asked} should have been answered correctly`,
     );
-    if (asked < count) await page.locator(".reveal .btn").click();
+    if (asked < count) await page.locator(".actions .btn").click();
   }
 };

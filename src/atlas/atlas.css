@@ -176,17 +176,32 @@
   font-size: clamp(56px, 17vw, 84px);
 }
 
+/* Two columns of answers even on a phone: a country name wraps to a
+   second line far more cheaply than a fourth row costs. */
+.opts--answers {
+  grid-template-columns: 1fr 1fr;
+}
+
 /* Text answers are sentences, not single digits: quieter than the
    shared .opt used for the maths game. */
 .opts .opt {
   position: relative;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   text-align: left;
-  padding: 14px 12px;
-  min-height: 62px;
+  padding: 12px;
+  min-height: 58px;
   display: flex;
   align-items: center;
+  line-height: 1.22;
+}
+
+@media (min-width: 560px) {
+  .opts .opt {
+    font-size: 16px;
+    padding: 14px 12px;
+    min-height: 62px;
+  }
 }
 
 .opts--flags {
@@ -212,9 +227,9 @@
 .reveal {
   display: flex;
   flex-direction: column;
-  gap: var(--s3);
+  gap: var(--s2);
   border-top: 1px solid var(--gold-soft);
-  padding-top: 14px;
+  padding-top: var(--s2);
 }
 
 .reveal .note {
@@ -223,20 +238,20 @@
 
 .reveal-body {
   display: flex;
-  gap: var(--s3);
-  align-items: center;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+  margin: 0;
 }
 
-.reveal-body > span:last-child {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+.reveal-body .flag {
+  align-self: center;
 }
 
 .reveal-body strong {
   font-family: var(--display);
   font-variation-settings: "opsz" 60;
-  font-size: 19px;
+  font-size: 18px;
 }
 
 /* ---------- summary, progress, board ---------- */
@@ -337,15 +352,86 @@
 }
 
 @media (max-width: 480px) {
-  .opts {
-    grid-template-columns: 1fr;
+  .final-score {
+    font-size: 54px;
+  }
+}
+
+@media (max-height: 780px) {
+  .atlas-title {
+    font-size: clamp(22px, 5.5vw, 30px);
   }
 
-  .opts--flags {
-    grid-template-columns: 1fr 1fr;
+  .opts--flags .opt {
+    min-height: 70px;
+  }
+
+  .flag-lg {
+    font-size: clamp(34px, 10vw, 48px);
+  }
+
+  .tabs button {
+    min-height: 40px;
+    padding: 7px 12px;
+  }
+
+  /* the counts are reference, not the task: they go first */
+  .meta {
+    display: none;
+  }
+
+  .atlas-lead {
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
+  .reveal {
+    padding-top: var(--s1);
+  }
+
+  /* Twelve rows of results: worth a tighter rhythm to keep them together. */
+  .log li {
+    padding: 5px 0;
+    font-size: 14px;
   }
 
   .final-score {
-    font-size: 54px;
+    font-size: 46px;
+  }
+
+  /* Region and question-type chips scroll sideways rather than stacking
+     into three rows of settings. */
+  .seg {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+
+  .seg::-webkit-scrollbar {
+    display: none;
+  }
+
+  .seg button {
+    flex: none;
+  }
+
+  .readout {
+    padding: 4px 11px;
+    font-size: 10.5px;
+  }
+
+  .ask strong {
+    font-size: clamp(22px, 5.5vw, 30px);
+  }
+
+  .flag-xl {
+    font-size: clamp(48px, 14vw, 72px);
+  }
+
+  .seg button {
+    min-height: 40px;
+    padding: 7px 12px;
+    font-size: 13px;
   }
 }

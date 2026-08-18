@@ -21,6 +21,11 @@ Live at <https://jirikuncar.github.io/edu/>.
 - **Nothing leaves the device.** Progress, player names and high scores live in
   `localStorage` under the `edu:` prefix. No accounts, analytics or network
   calls at runtime.
+- **One screen deep.** Every question and every answered state fits an
+  iPhone 13 without scrolling, in both languages, even with the longest
+  country and capital names in the data set. Illustrations, the map and the
+  hands-on props are sized in viewport units and step back once answered;
+  the next step always sits in a sticky bar at the bottom of the screen.
 - **Accessible.** Landmarks, live regions, managed focus, keyboard play
   (number keys answer, Enter advances), 44px touch targets and WCAG AA
   contrast on every text tier — checked by axe in the test suite.
@@ -42,8 +47,9 @@ pnpm test         # tests run against dist/, so build first
 `pnpm test` serves `dist/` from the test process itself and drives a real
 Chromium through both games: full playthroughs, offline reloads, the install
 manifest, phone layouts down to 280px, virtual-keyboard layout and an axe
-audit of every screen in both languages. The files run in parallel and the
-whole suite takes about four seconds.
+audit of every screen in both languages, and it measures every screen for
+vertical overflow so a question can never quietly grow past the fold. The
+files run in parallel and the whole suite takes about five seconds.
 
 Two generators are checked in and rarely need re-running:
 

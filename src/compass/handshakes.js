@@ -24,6 +24,7 @@ const UI = {
     es: "Esos dos ya se han dado la mano.",
   },
   reset: { en: "Start the greetings again", es: "Empezar los saludos de nuevo" },
+  resetShort: { en: "Clear", es: "Borrar" },
   person: { en: (n) => `Apprentice ${n}`, es: (n) => `Aprendiz ${n}` },
   personState: {
     en: (n, shakes) =>
@@ -53,7 +54,7 @@ const seats = (count) =>
 
 const colour = (index) => `hsl(${(index * 47 + 42) % 360} 72% 66%)`;
 
-export function ringWidget({ people }, state) {
+export function ringWidget({ people }, state, answered = false) {
   const spots = seats(people);
   const shakes = (person) =>
     state.links.filter(([a, b]) => a === person || b === person).length;
@@ -70,10 +71,18 @@ export function ringWidget({ people }, state) {
     })
     .join("");
 
+  if (answered)
+    return `
+    <p class="ring-count ring-count--done">
+      <b>${t(UI.count, total)}</b>
+      ${total === everyone ? `<span class="tray-good">${t(UI.all)}</span>` : ""}
+    </p>`;
+
   return `
     <div class="ring-widget">
-      <p class="label" id="ring-label">${t(UI.people)}</p>
+      <p class="sr-only" id="ring-label">${t(UI.people)}</p>
       <div class="ring" role="group" aria-labelledby="ring-label">
+        <div class="ring-seats">
         <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${lines}</svg>
         ${spots
           .map(
@@ -86,7 +95,9 @@ export function ringWidget({ people }, state) {
           </button>`,
           )
           .join("")}
+        </div>
       </div>
+      <div class="tray-foot">
       <p class="ring-count" role="status">
         <b>${t(UI.count, total)}</b>
         ${total === everyone ? `<span class="tray-good">${t(UI.all)}</span>` : ""}
@@ -98,12 +109,13 @@ export function ringWidget({ people }, state) {
               : ""
         }
       </p>
-      <p class="tray-help mono dim">${t(UI.tap)}</p>
       ${
         total || state.selected !== null
-          ? `<button type="button" class="btn btn--ghost ring-reset">${t(UI.reset)}</button>`
+          ? `<button type="button" class="chip ring-reset" aria-label="${t(UI.reset)}">${t(UI.resetShort)}</button>`
           : ""
       }
+      </div>
+      ${total ? "" : `<p class="tray-help mono dim">${t(UI.tap)}</p>`}
     </div>`;
 }
 
