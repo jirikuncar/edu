@@ -25,8 +25,8 @@ const longest = (lang, key) =>
   COUNTRIES.map((c) => c[key][lang]).sort((a, b) => b.length - a.length)[0];
 
 describe("fits on a phone screen", { concurrency: true }, () => {
-  test("both games are one screen deep, in english and spanish", async () => {
-    for (const lang of ["en", "es"]) {
+  for (const lang of ["en", "es"]) {
+    test(`both games are one screen deep in ${lang}`, async () => {
       const { context, page } = await site.newPage(phone);
       await page.goto(site.home);
       await page.evaluate((value) => localStorage.setItem("edu:lang", JSON.stringify(value)), lang);
@@ -98,8 +98,8 @@ describe("fits on a phone screen", { concurrency: true }, () => {
       }
       assert.equal(seen.size, 3, "the mixed round should have shown all three question types");
       await context.close();
-    }
-  });
+    });
+  }
 
   test("both games are reachable without scrolling the hub", async () => {
     const { context, page } = await site.newPage(phone);

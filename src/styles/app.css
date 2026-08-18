@@ -225,8 +225,13 @@ button {
   height: 24px;
 }
 
-.shell-back:hover {
-  background: var(--gold-faint);
+/* Hover effects only where there is a real pointer. On a touch screen a
+   :hover style sticks after the tap, and a hover transform makes the
+   button move under the finger. */
+@media (hover: hover) and (pointer: fine) {
+  .shell-back:hover {
+    background: var(--gold-faint);
+  }
 }
 
 .shell-progress {
@@ -471,9 +476,11 @@ a.card {
   transition: transform 0.15s ease, border-color 0.15s ease;
 }
 
-a.card:hover {
-  border-color: var(--gold);
-  transform: translateY(-2px);
+@media (hover: hover) and (pointer: fine) {
+  a.card:hover {
+    border-color: var(--gold);
+    transform: translateY(-2px);
+  }
 }
 
 /* ---------- controls ---------- */
@@ -513,8 +520,10 @@ a.card:hover {
   box-shadow: none;
 }
 
-.btn--ghost:hover {
-  background: var(--gold-faint);
+@media (hover: hover) and (pointer: fine) {
+  .btn--ghost:hover {
+    background: var(--gold-faint);
+  }
 }
 
 .btn--ghost:active {
@@ -541,10 +550,12 @@ a.card:hover {
   transition: transform 0.12s ease, background 0.15s ease, border-color 0.15s ease;
 }
 
-.opt:hover:not(:disabled) {
-  background: #1c3f5c;
-  border-color: var(--gold);
-  transform: translateY(-2px);
+@media (hover: hover) and (pointer: fine) {
+  .opt:hover:not(:disabled) {
+    background: #1c3f5c;
+    border-color: var(--gold);
+    transform: translateY(-2px);
+  }
 }
 
 .opt:disabled {
@@ -638,8 +649,10 @@ a.card:hover {
   letter-spacing: 0.06em;
 }
 
-.chip:hover {
-  background: var(--gold-faint);
+@media (hover: hover) and (pointer: fine) {
+  .chip:hover {
+    background: var(--gold-faint);
+  }
 }
 
 /* Toggle switch — a real button with role="switch", so the state is

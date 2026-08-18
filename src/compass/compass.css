@@ -145,9 +145,11 @@
   transition: transform 0.12s ease, background 0.15s ease, border-color 0.15s ease;
 }
 
-.coin:hover {
-  transform: translateY(-2px);
-  border-color: var(--gold);
+@media (hover: hover) and (pointer: fine) {
+  .coin:hover {
+    transform: translateY(-2px);
+    border-color: var(--gold);
+  }
 }
 
 /* A coin in the basket is gold side up and sits lower, as if dropped in. */
@@ -252,8 +254,10 @@
   transition: transform 0.12s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
-.person:hover {
-  border-color: var(--gold);
+@media (hover: hover) and (pointer: fine) {
+  .person:hover {
+    border-color: var(--gold);
+  }
 }
 
 .person.picked {
