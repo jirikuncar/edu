@@ -19,8 +19,10 @@ const plain = (value) =>
 // Several countries name a capital that is not the one Natural Earth flags
 // as primary (Sucre, Amsterdam, Yamoussoukro...). Match on the name we
 // actually show, and only fall back to the flagged capital.
-/* Natural Earth has no entry for Nauru's seat of government. */
+/* Natural Earth has no entry for Nauru's seat of government. Ciudad de la
+   Paz became Equatorial Guinea's capital in January 2026. */
 const MANUAL = {
+  GQ: { name: "Ciudad de la Paz", lon: 10.8225, lat: 1.58889 },
   NR: { name: "Yaren", lon: 166.921, lat: -0.548 },
 };
 

@@ -54,7 +54,7 @@ export const CAPITALS = {
   EC: [-78.502, -0.213], // Quito
   EG: [31.248, 30.052], // Cairo
   SV: [-89.216, 13.703], // San Salvador
-  GQ: [8.783, 3.750], // Malabo
+  GQ: [10.8225, 1.58889], // Ciudad de la Paz (manual)
   ER: [38.933, 15.333], // Asmara
   EE: [24.728, 59.434], // Tallinn
   SZ: [31.200, -26.467], // Lobamba
@@ -88,7 +88,7 @@ export const CAPITALS = {
   JM: [-76.767, 17.977], // Kingston
   JP: [139.749, 35.687], // Tokyo
   JO: [35.931, 31.952], // Amman
-  KZ: [71.428, 51.181], // Nur-Sultan
+  KZ: [71.428, 51.181], // Astana
   KE: [36.815, -1.281], // Nairobi
   KI: [173.018, 1.338], // Tarawa
   KW: [47.976, 29.372], // Kuwait City
